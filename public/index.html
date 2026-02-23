@@ -169,6 +169,13 @@ function doAnalyze() {
     contactName = p.contact_name || '';
     companyName = p.company_name || '';
 
+    // Debug: show counts
+    console.log('API response:', JSON.stringify(data).substring(0, 500));
+    console.log('parsed_emails count:', (p.parsed_emails||[]).length);
+    console.log('per_email count:', (p.per_email||[]).length);
+    console.log('per_email nums:', (p.per_email||[]).map(function(x){return x.email_num}).join(','));
+    console.log('complete:', data.complete, 'raw_length:', data.raw_length);
+
     R = {
       emails: (p.parsed_emails || []).map(function(e) {
         return { i: e.index, from: e.from, date: e.date, dir: e.direction === 'inbound' ? 'in' : 'out', snip: e.snippet };

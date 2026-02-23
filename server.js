@@ -118,6 +118,14 @@ app.post('/api/analyze', async (req, res) => {
     const perCount = (parsed.per_email || []).length;
     const complete = emailCount === perCount;
 
+    // Log for debugging
+    console.log(`[ANALYZE] Model: ${modelId} | Emails parsed: ${emailCount} | Per-email entries: ${perCount} | Complete: ${complete} | Raw length: ${raw.length}`);
+    if (!complete) {
+      console.log(`[WARNING] Model skipped emails! parsed_emails has ${emailCount}, per_email has ${perCount}`);
+      console.log(`[WARNING] parsed_emails indices: ${(parsed.parsed_emails||[]).map(e=>e.index).join(',')}`);
+      console.log(`[WARNING] per_email nums: ${(parsed.per_email||[]).map(e=>e.email_num).join(',')}`);
+    }
+
     res.json({ result: parsed, model: modelId, raw_length: raw.length, email_count: emailCount, analysis_count: perCount, complete });
 
   } catch (err) {
