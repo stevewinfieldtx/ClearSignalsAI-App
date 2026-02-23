@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClearSignals AI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0B1929;color:#F5F7FA;height:100vh;overflow:hidden}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:7px 16px;background:#112336;border-bottom:1px solid rgba(255,255,255,0.08)}
+.logo{font-size:14px;font-weight:800;letter-spacing:.06em}.logo b{color:#C9A84C}
+.logo .ver{font-size:9px;color:#8A9BAD;font-weight:400;margin-left:4px}
+.cfg{display:flex;align-items:center;gap:10px}
+.cfg select{background:#112336;border:1px solid rgba(255,255,255,0.08);color:#F5F7FA;padding:3px 8px;border-radius:3px;font-size:10px}
+.cfg select:focus{outline:none;border-color:#C9A84C}
+.main{display:flex;height:calc(100vh - 42px)}
+
+/* Left panel */
+.left{width:340px;min-width:340px;border-right:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;overflow-y:auto;padding:10px}
+.left::-webkit-scrollbar,.right::-webkit-scrollbar{width:4px}
+.left::-webkit-scrollbar-thumb,.right::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+.right{flex:1;overflow-y:auto;padding:16px 20px}
+
+textarea{width:100%;height:calc(100vh - 140px);background:#112336;border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:10px;color:#F5F7FA;font-size:11px;font-family:monospace;line-height:1.5;resize:none;outline:none}
+textarea:focus{border-color:#C9A84C}
+textarea::placeholder{color:#8A9BAD;opacity:.5}
+.btn{width:100%;padding:10px 0;margin-top:6px;border:none;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.btn:disabled{opacity:.4;cursor:default}
+.btn-gold{background:#C9A84C;color:#0B1929}.btn-gold:hover:not(:disabled){background:#F0CC6E}
+.btn-ghost{background:rgba(255,255,255,0.04);color:#8A9BAD;border:1px solid rgba(255,255,255,0.08)}
+.btn-export{background:rgba(27,79,138,0.15);border:1px solid rgba(46,139,192,0.3);color:#2E8BC0}
+.slbl{font-size:8px;font-weight:700;letter-spacing:.12em;color:#8A9BAD;margin:8px 0 5px;text-transform:uppercase}
+
+/* Loading */
+#loadBox{display:none;text-align:center;padding:40px 20px}
+#loadBox .spin{font-size:32px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Email cards */
+.ecard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid rgba(255,255,255,0.08);border-radius:0 5px 5px 0;padding:6px 8px;margin-bottom:3px;cursor:pointer;transition:all .12s}
+.ecard:hover{border-color:rgba(201,168,76,0.3)}
+.ecard.act{background:rgba(255,255,255,0.07);border-color:#C9A84C}
+.ecard.final{border-left-color:#C9A84C}
+.dir{font-size:7px;font-weight:700;letter-spacing:.06em;padding:1px 4px;border-radius:2px;display:inline-block}
+.dir.in{color:#2E8BC0;background:rgba(46,139,192,0.15)}.dir.out{color:#C9A84C;background:rgba(201,168,76,0.15)}
+.ecard .num{font-size:10px;font-weight:600;margin-left:3px}
+.ecard .meta{font-size:9px;color:#8A9BAD;margin-top:1px}
+.ecard .snip{font-size:9px;color:#8A9BAD;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:295px}
+.pill{font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px}
+
+/* Right panel */
+.scores{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.gauge{text-align:center;min-width:75px}
+.gauge .val{font-size:30px;font-weight:300;font-family:Georgia,'Times New Roman',serif;line-height:1}
+.gauge .mx{font-size:13px;color:#8A9BAD;font-weight:300}
+.gauge .lbl{font-size:8px;font-weight:700;letter-spacing:.1em;color:#8A9BAD;margin-top:3px;text-transform:uppercase}
+.ryg-w{flex:1;padding-top:6px}
+.ryg-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;background:rgba(255,255,255,0.06);margin-top:3px}
+.ryg-lbls{display:flex;gap:10px;margin-top:4px}
+.ryg-lbls span{font-size:9px}
+.stage{display:inline-block;padding:2px 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:rgba(27,79,138,0.15);color:#2E8BC0;border:1px solid rgba(46,139,192,0.2);margin-bottom:12px}
+
+.box{border-radius:6px;padding:8px 12px;margin-bottom:10px}
+.box .t{font-size:8px;font-weight:700;letter-spacing:.1em;margin-bottom:4px;text-transform:uppercase}
+.box .txt{font-size:12px;line-height:1.6;color:#F5F7FA}
+.box.sum{background:rgba(13,115,119,0.08);border:1px solid rgba(13,115,119,0.18)}.box.sum .t{color:#0D7377}
+.box.coach{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15)}.box.coach .t{color:#C9A84C}.box.coach .txt{color:#F0CC6E}
+.box.ns{background:rgba(27,79,138,0.1);border:1px solid rgba(46,139,192,0.2)}.box.ns .t{color:#2E8BC0}
+.box.nt{background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);padding:10px 14px}.box.nt .t{color:#C9A84C;font-size:8px;margin-bottom:8px}
+
+.nti{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
+.nti:last-child{margin-bottom:0}
+.nt-n{min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;margin-top:1px}
+.nt-n.ok{background:rgba(26,122,74,0.2);border:1px solid rgba(26,122,74,0.4);color:#1A7A4A}
+.nt-n.fix{background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.3);color:#C9A84C}
+.nt-s{font-size:12px;color:#F0CC6E;font-weight:600;line-height:1.4;margin-bottom:2px}
+.nt-w{font-size:11px;color:#8A9BAD;line-height:1.5}
+
+.sig{background:rgba(255,255,255,0.04);border-radius:5px;padding:6px 9px;margin-bottom:4px;border-left:3px solid rgba(255,255,255,0.08)}
+.sig.red{border-left-color:#C0392B}.sig.yellow{border-left-color:#E8A020}.sig.green{border-left-color:#1A7A4A}
+.sig .sr{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.badge{font-size:7px;font-weight:700;letter-spacing:.08em;padding:1px 5px;border-radius:2px;text-transform:uppercase}
+.badge.red{background:rgba(192,57,43,0.15);color:#C0392B}
+.badge.yellow{background:rgba(232,160,32,0.12);color:#E8A020}
+.badge.green{background:rgba(26,122,74,0.15);color:#1A7A4A}
+.sig .sd{font-size:11px;color:#F5F7FA;line-height:1.4}
+.sig .sq{font-size:10px;color:#8A9BAD;font-style:italic;margin-top:2px;border-left:2px solid rgba(255,255,255,0.1);padding-left:6px}
+.sig .se{font-size:9px;color:#8A9BAD;opacity:.7}
+
+.ph{display:flex;align-items:center;justify-content:center;height:100%}
+.ph .in{text-align:center}.ph .ico{font-size:36px;margin-bottom:8px}
+.ph h3{font-size:14px;color:#C9A84C;margin-bottom:4px}
+.ph p{font-size:11px;color:#8A9BAD;line-height:1.6;max-width:280px}
+
+/* Mobile */
+@media(max-width:768px){
+  .main{flex-direction:column}
+  .left{width:100%;min-width:auto;border-right:none;border-bottom:1px solid rgba(255,255,255,0.08);max-height:45vh}
+  .right{max-height:55vh}
+  textarea{height:150px}
+}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo">CLEAR<b>SIGNALS</b> AI<span class="ver">v0.8</span></div>
+  <div class="cfg">
+    <select id="modelSel">
+      <option value="haiku" selected>Claude Haiku</option>
+      <option value="sonnet">Claude Sonnet</option>
+      <option value="flash">Gemini Flash</option>
+      <option value="flash-lite">Gemini Flash Lite</option>
+      <option value="pro">Gemini Pro</option>
+    </select>
+  </div>
+</div>
+<div class="main">
+  <div class="left" id="L">
+    <textarea id="ta" placeholder="Paste a forwarded email thread here...&#10;&#10;Include the full reply chain — ClearSignals parses every message, scores the deal progressively, and coaches every rep response."></textarea>
+    <button class="btn btn-gold" id="goBtn" onclick="doAnalyze()">Analyze Thread</button>
+    <div id="loadBox">
+      <div class="spin">&#x1F50D;</div>
+      <div style="font-size:14px;color:#C9A84C;margin:10px 0">Analyzing thread...</div>
+      <div id="timer" style="font-size:24px;color:#F0CC6E;font-weight:700">0.0s</div>
+      <div id="errMsg" style="color:#C0392B;font-size:11px;margin-top:10px"></div>
+    </div>
+  </div>
+  <div class="right" id="R">
+    <div class="ph"><div class="in"><div class="ico">&#x1F4E7;</div><h3>Paste an Email Thread</h3><p>Paste a forwarded email with the full reply chain. ClearSignals parses every message, detects signals, scores the deal progressively, and coaches every rep response.</p></div></div>
+  </div>
+</div>
+<script>
+var R = null;
+var viewIdx = -1;
+
+function $(id) { return document.getElementById(id); }
+function col(v, mx) { return mx === 10 ? (v >= 7 ? '#1A7A4A' : v >= 4 ? '#E8A020' : '#C0392B') : (v >= 65 ? '#1A7A4A' : v >= 35 ? '#E8A020' : '#C0392B'); }
+function esc(s) { return (s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function doAnalyze() {
+  var txt = $('ta').value.trim();
+  if (!txt) { alert('Paste an email thread first'); return; }
+
+  $('ta').style.display = 'none';
+  $('goBtn').style.display = 'none';
+  $('loadBox').style.display = 'block';
+  $('errMsg').textContent = '';
+
+  var t0 = performance.now();
+  var iv = setInterval(function() {
+    $('timer').textContent = ((performance.now() - t0) / 1000).toFixed(1) + 's';
+  }, 100);
+
+  fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: txt, model: $('modelSel').value })
+  })
+  .then(function(resp) {
+    if (!resp.ok) return resp.json().then(function(e) { throw new Error(e.error || 'Request failed'); });
+    return resp.json();
+  })
+  .then(function(data) {
+    clearInterval(iv);
+    $('timer').textContent = ((performance.now() - t0) / 1000).toFixed(1) + 's';
+    var p = data.result;
+
+    R = {
+      emails: (p.parsed_emails || []).map(function(e) {
+        return { i: e.index, from: e.from, date: e.date, dir: e.direction === 'inbound' ? 'in' : 'out', snip: e.snippet };
+      }),
+      per_email: (p.per_email || []).map(function(pe) {
+        return {
+          e: pe.email_num, intent: pe.intent, win_pct: pe.win_pct,
+          sum: pe.summary,
+          signals: (pe.signals || []).map(function(s) { return { type: s.type, sev: s.severity, desc: s.desc, q: s.quote }; }),
+          coaching: pe.coaching || {}
+        };
+      }),
+      intent: p.final ? p.final.intent : 5,
+      win_pct: p.final ? p.final.win_pct : 50,
+      ryg: p.final ? (p.final.ryg || { r: 0, y: 0, g: 0 }) : { r: 0, y: 0, g: 0 },
+      stage: p.final ? (p.final.deal_stage || 'unknown') : 'unknown',
+      summary: p.final ? (p.final.summary || '') : '',
+      coach: p.final ? (p.final.coach || '') : '',
+      next_steps: p.final ? (p.final.next_steps || '') : '',
+      signals: p.final ? (p.final.signals || []).map(function(s) { return { type: s.type, sev: s.severity, desc: s.desc, q: s.quote }; }) : [],
+      next_time: p.final ? (p.final.next_time || []).map(function(n) { return { e: n.at_email, suggestion: n.suggestion, why: n.why }; }) : []
+    };
+    viewIdx = -1;
+    showResults();
+  })
+  .catch(function(ex) {
+    clearInterval(iv);
+    $('errMsg').textContent = ex.message;
+    setTimeout(function() {
+      $('ta').style.display = '';
+      $('goBtn').style.display = '';
+      $('loadBox').style.display = 'none';
+    }, 5000);
+  });
+}
+
+function showResults() {
+  var h = '';
+  h += '<div class="slbl">THREAD &middot; ' + R.emails.length + ' EMAILS &middot; ' + R.stage.toUpperCase().replace(/_/g, ' ') + '</div>';
+  h += '<div class="ecard final ' + (viewIdx === -1 ? 'act' : '') + '" onclick="sel(-1)">';
+  h += '<div style="font-size:11px;font-weight:700;color:#C9A84C">Overall Assessment</div>';
+  h += '<div style="font-size:9px;color:#8A9BAD">Intent ' + R.intent + '/10 &middot; Win ' + R.win_pct + '%</div></div>';
+
+  for (var idx = 0; idx < R.emails.length; idx++) {
+    var em = R.emails[idx];
+    var pe = null; for (var j = 0; j < R.per_email.length; j++) { if (R.per_email[j].e === em.i) { pe = R.per_email[j]; break; } } pe = pe || {};
+    var sigs = pe.signals || [];
+    var worst = 'rgba(255,255,255,0.08)';
+    for (var j = 0; j < sigs.length; j++) { if (sigs[j].sev === 'red') { worst = '#C0392B'; break; } if (sigs[j].sev === 'yellow') worst = '#E8A020'; if (sigs[j].sev === 'green' && worst !== '#E8A020') worst = '#1A7A4A'; }
+    var hasCoach = pe.coaching && (pe.coaching.good || pe.coaching.better);
+    h += '<div class="ecard ' + (viewIdx === idx ? 'act' : '') + '" style="border-left-color:' + worst + '" onclick="sel(' + idx + ')">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center"><div style="display:flex;align-items:center;gap:3px">';
+    h += '<span class="dir ' + (em.dir === 'in' ? 'in' : 'out') + '">' + (em.dir === 'in' ? 'IN' : 'OUT') + '</span>';
+    h += '<span class="num">#' + em.i + '</span>';
+    if (hasCoach) h += '<span style="font-size:8px;color:#C9A84C">&#x1F4A1;</span>';
+    h += '</div><div style="display:flex;gap:4px">';
+    if (pe.intent != null) h += '<span class="pill" style="background:rgba(255,255,255,0.06);color:' + col(pe.intent, 10) + '">' + pe.intent + '</span>';
+    if (pe.win_pct != null) h += '<span class="pill" style="background:rgba(255,255,255,0.06);color:' + col(pe.win_pct, 100) + '">' + pe.win_pct + '%</span>';
+    h += '</div></div>';
+    h += '<div class="meta">' + esc(em.from) + (em.date ? ' &middot; ' + esc(em.date) : '') + '</div>';
+    h += '<div class="snip">' + esc(em.snip) + '</div></div>';
+  }
+  h += '<button class="btn btn-ghost" onclick="location.reload()" style="margin-top:8px">Paste Another</button>';
+  h += '<button class="btn btn-export" onclick="doExport()" style="margin-top:4px">Export Report</button>';
+  $('L').innerHTML = h;
+  renderR();
+}
+
+function sel(i) { viewIdx = i; showResults(); }
+
+function renderR() {
+  if (!R) return;
+  var h = '';
+  if (viewIdx === -1) {
+    var ryg = R.ryg; var tot = Math.max((ryg.r || 0) + (ryg.y || 0) + (ryg.g || 0), 1);
+    h += '<div class="scores">';
+    h += '<div class="gauge"><div class="val" style="color:' + col(R.intent, 10) + '">' + R.intent + '<span class="mx">/10</span></div><div class="lbl">Buyer Intent</div></div>';
+    h += '<div class="gauge"><div class="val" style="color:' + col(R.win_pct, 100) + '">' + R.win_pct + '<span class="mx">%</span></div><div class="lbl">Win Likelihood</div></div>';
+    h += '<div class="ryg-w"><div class="lbl" style="font-size:8px;font-weight:700;letter-spacing:.1em;color:#8A9BAD;margin-bottom:3px">CULTURAL ALIGNMENT</div>';
+    h += '<div class="ryg-bar"><div style="width:' + (ryg.r / tot * 100) + '%;background:#C0392B"></div><div style="width:' + (ryg.y / tot * 100) + '%;background:#E8A020"></div><div style="width:' + (ryg.g / tot * 100) + '%;background:#1A7A4A"></div></div>';
+    h += '<div class="ryg-lbls"><span style="color:#C0392B">&#x25CF; ' + ryg.r + ' Threats</span><span style="color:#E8A020">&#x25CF; ' + ryg.y + ' Caution</span><span style="color:#1A7A4A">&#x25CF; ' + ryg.g + ' Trust</span></div></div></div>';
+    h += '<div class="stage">' + esc(R.stage).replace(/_/g, ' ') + '</div>';
+    if (R.summary) h += '<div class="box sum"><div class="t">Deal Status</div><div class="txt">' + esc(R.summary) + '</div></div>';
+    if (R.next_steps) h += '<div class="box ns"><div class="t">Next Steps</div><div class="txt">' + esc(R.next_steps) + '</div></div>';
+    if (R.next_time && R.next_time.length) {
+      var allGood = R.next_time.length === 1 && (R.next_time[0].suggestion === 'Well played' || R.next_time[0].suggestion === 'Well Played');
+      h += '<div class="box nt"><div class="t">' + (allGood ? '&#x2713; GREAT JOB' : 'NEXT TIME...') + '</div>';
+      for (var n = 0; n < R.next_time.length; n++) {
+        var nt = R.next_time[n]; var ok = nt.suggestion === 'Well played' || nt.suggestion === 'Well Played';
+        h += '<div class="nti"><div class="nt-n ' + (ok ? 'ok' : 'fix') + '">#' + (nt.e || '?') + '</div><div><div class="nt-s">' + esc(nt.suggestion) + '</div><div class="nt-w">' + esc(nt.why) + '</div></div></div>';
+      }
+      h += '</div>';
+    }
+    if (R.coach) h += '<div class="box coach"><div class="t">Overall Coaching</div><div class="txt">' + esc(R.coach) + '</div></div>';
+    // Per-email progression
+    if (R.per_email && R.per_email.length) {
+      h += '<div class="slbl" style="margin-top:14px">EMAIL-BY-EMAIL PROGRESSION</div>';
+      for (var idx = 0; idx < R.per_email.length; idx++) {
+        var pe = R.per_email[idx];
+        var em = null; for (var j = 0; j < R.emails.length; j++) { if (R.emails[j].i === pe.e) { em = R.emails[j]; break; } } em = em || {};
+        var sigs = pe.signals || [];
+        var c = pe.coaching || {};
+        h += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:8px 10px;margin-bottom:4px;cursor:pointer" onclick="sel(' + idx + ')">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:center">';
+        h += '<div style="display:flex;align-items:center;gap:6px"><span class="dir ' + (em.dir === 'in' ? 'in' : 'out') + '">' + (em.dir === 'in' ? 'IN' : 'OUT') + '</span>';
+        h += '<span style="font-size:11px;font-weight:600;color:#F5F7FA">#' + pe.e + '</span>';
+        h += '<span style="font-size:10px;color:#8A9BAD">' + esc(em.from) + '</span></div>';
+        h += '<div style="display:flex;gap:8px"><span style="font-size:11px;font-weight:600;color:' + col(pe.intent || 5, 10) + '">Intent ' + (pe.intent != null ? pe.intent : '?') + '</span>';
+        h += '<span style="font-size:11px;font-weight:600;color:' + col(pe.win_pct || 50, 100) + '">Win ' + (pe.win_pct != null ? pe.win_pct : '?') + '%</span></div></div>';
+        if (pe.sum) h += '<div style="font-size:11px;color:#F5F7FA;margin-top:4px;line-height:1.4">' + esc(pe.sum) + '</div>';
+        for (var si = 0; si < sigs.length; si++) {
+          h += '<div style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;margin-right:6px"><span class="badge ' + sigs[si].sev + '">' + sigs[si].sev + '</span><span style="font-size:10px;color:#8A9BAD">' + esc(sigs[si].desc) + '</span></div>';
+        }
+        if (c.good) h += '<div style="font-size:10px;color:#1A7A4A;margin-top:4px">&#x2713; ' + esc(c.good) + '</div>';
+        if (c.better) h += '<div style="font-size:10px;color:#C9A84C;margin-top:2px">&#x1F4A1; ' + esc(c.better) + '</div>';
+        h += '</div>';
+      }
+    }
+    // All signals (final)
+    if (R.signals && R.signals.length) {
+      h += '<div class="slbl" style="margin-top:14px">ALL SIGNALS (' + R.signals.length + ')</div>';
+      for (var si = 0; si < R.signals.length; si++) {
+        var s = R.signals[si];
+        h += '<div class="sig ' + s.sev + '"><div class="sr"><span class="badge ' + s.sev + '">' + s.sev + '</span><span class="badge ' + s.sev + '" style="opacity:.7">' + s.type + '</span></div>';
+        h += '<div class="sd">' + esc(s.desc) + '</div>';
+        if (s.q) h += '<div class="sq">"' + esc(s.q) + '"</div>';
+        h += '</div>';
+      }
+    }
+  } else {
+    // Per-email detail view
+    var em = R.emails[viewIdx] || {};
+    var pe = null; for (var j = 0; j < R.per_email.length; j++) { if (R.per_email[j].e === em.i) { pe = R.per_email[j]; break; } } pe = pe || {};
+    var sigs = pe.signals || [];
+    var c = pe.coaching || {};
+    var nts = []; if (R.next_time) { for (var j = 0; j < R.next_time.length; j++) { if (R.next_time[j].e === em.i) nts.push(R.next_time[j]); } }
+    h += '<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px">';
+    h += '<span class="dir ' + (em.dir === 'in' ? 'in' : 'out') + '" style="font-size:9px;padding:2px 6px">' + (em.dir === 'in' ? 'INBOUND' : 'OUTBOUND') + '</span>';
+    h += '<span style="font-size:16px;font-weight:700">Email #' + em.i + '</span></div>';
+    h += '<div style="font-size:11px;color:#8A9BAD;margin-top:3px">' + esc(em.from) + ' &middot; ' + esc(em.date) + '</div></div>';
+    if (pe.intent != null) {
+      h += '<div class="scores" style="margin-bottom:12px">';
+      h += '<div class="gauge"><div class="val" style="color:' + col(pe.intent, 10) + '">' + pe.intent + '<span class="mx">/10</span></div><div class="lbl">Intent at this point</div></div>';
+      h += '<div class="gauge"><div class="val" style="color:' + col(pe.win_pct, 100) + '">' + pe.win_pct + '<span class="mx">%</span></div><div class="lbl">Win % at this point</div></div></div>';
+    }
+    if (pe.sum) h += '<div class="box sum"><div class="t">WHAT THIS EMAIL MEANS</div><div class="txt">' + esc(pe.sum) + '</div></div>';
+    if (c.good || c.better) {
+      h += '<div class="box coach"><div class="t">REP COACHING</div>';
+      if (c.good) h += '<div style="font-size:12px;color:#1A7A4A;line-height:1.5;margin-bottom:4px">&#x2713; <strong>Good:</strong> ' + esc(c.good) + '</div>';
+      if (c.better) h += '<div style="font-size:12px;color:#F0CC6E;line-height:1.5">&#x1F4A1; <strong>Next time:</strong> ' + esc(c.better) + '</div>';
+      h += '</div>';
+    }
+    if (sigs.length) {
+      h += '<div class="slbl">SIGNALS (' + sigs.length + ')</div>';
+      for (var si = 0; si < sigs.length; si++) {
+        h += '<div class="sig ' + sigs[si].sev + '"><div class="sr"><span class="badge ' + sigs[si].sev + '">' + sigs[si].sev + '</span><span class="badge ' + sigs[si].sev + '" style="opacity:.7">' + sigs[si].type + '</span></div>';
+        h += '<div class="sd">' + esc(sigs[si].desc) + '</div>';
+        if (sigs[si].q) h += '<div class="sq">"' + esc(sigs[si].q) + '"</div>';
+        h += '</div>';
+      }
+    }
+    if (nts.length) {
+      h += '<div class="box nt" style="margin-top:10px"><div class="t">PIVOTAL MOMENT</div>';
+      for (var ni = 0; ni < nts.length; ni++) {
+        h += '<div class="nti"><div class="nt-n fix">#' + nts[ni].e + '</div><div><div class="nt-s">' + esc(nts[ni].suggestion) + '</div><div class="nt-w">' + esc(nts[ni].why) + '</div></div></div>';
+      }
+      h += '</div>';
+    }
+  }
+  $('R').innerHTML = h;
+}
+
+function doExport() {
+  if (!R) return;
+  var r = R;
+  var h = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>ClearSignals Analysis</title><style>';
+  h += 'body{font-family:Arial,sans-serif;max-width:850px;margin:0 auto;padding:20px;background:#f8f9fa;color:#333}';
+  h += 'h1{font-size:18px;color:#0B1929;border-bottom:3px solid #C9A84C;padding-bottom:8px}h2{font-size:14px;color:#1B4F8A;margin-top:24px}';
+  h += '.sc{display:flex;gap:24px;margin:16px 0;padding:16px 20px;background:#0B1929;border-radius:8px;flex-wrap:wrap;color:#fff}.sc .s{text-align:center;min-width:80px}.sc .v{font-size:28px;font-weight:700;font-family:Georgia,serif}.sc .l{font-size:10px;color:#8A9BAD;text-transform:uppercase}';
+  h += '.bx{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:12px 16px;margin:8px 0}.bx .t{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}';
+  h += '.sum .t{color:#0D7377}.cch .t{color:#C9A84C}.ns .t{color:#1B4F8A}.nt .t{color:#C9A84C}';
+  h += '.stg{display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;background:#EBF2FA;color:#1B4F8A;margin-bottom:12px}';
+  h += '.erow{background:#fff;border:1px solid #e8e8e8;border-radius:6px;padding:10px 14px;margin-bottom:6px}';
+  h += '.erow .dir{font-size:8px;font-weight:700;padding:1px 6px;border-radius:2px;margin-right:4px}.erow .dir.in{background:#E8F4FD;color:#1B4F8A}.erow .dir.out{background:#FEF6E0;color:#C9A84C}';
+  h += '.good{color:#1A7A4A;font-size:11px}.better{color:#B8860B;font-size:11px}';
+  h += '.sg{display:inline-block;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;margin:1px}.sg.red{background:#fde8e8;color:#C0392B}.sg.yellow{background:#fef6e0;color:#E8A020}.sg.green{background:#e6f5ed;color:#1A7A4A}';
+  h += '.ft{margin-top:24px;padding-top:12px;border-top:1px solid #ddd;font-size:10px;color:#999}';
+  h += '</style></head><body>';
+  h += '<h1>ClearSignals AI - Thread Analysis</h1>';
+  h += '<div class="sc"><div class="s"><div class="v" style="color:' + col(r.intent, 10) + '">' + r.intent + '/10</div><div class="l">Buyer Intent</div></div>';
+  h += '<div class="s"><div class="v" style="color:' + col(r.win_pct, 100) + '">' + r.win_pct + '%</div><div class="l">Win Likelihood</div></div>';
+  h += '<div class="s"><div style="font-size:11px"><span style="color:#C0392B">' + r.ryg.r + ' Threats</span> &middot; <span style="color:#E8A020">' + r.ryg.y + ' Caution</span> &middot; <span style="color:#1A7A4A">' + r.ryg.g + ' Trust</span></div><div class="l" style="margin-top:4px">Signals</div></div></div>';
+  h += '<div class="stg">' + esc(r.stage).replace(/_/g, ' ') + '</div>';
+  if (r.summary) h += '<div class="bx sum"><div class="t">Deal Status</div>' + esc(r.summary) + '</div>';
+  if (r.next_steps) h += '<div class="bx ns"><div class="t">Next Steps</div>' + esc(r.next_steps) + '</div>';
+  if (r.coach) h += '<div class="bx cch"><div class="t">Overall Coaching</div>' + esc(r.coach) + '</div>';
+  h += '<h2>Email-by-Email Progression</h2>';
+  for (var idx = 0; idx < r.per_email.length; idx++) {
+    var pe = r.per_email[idx]; var em = null; for (var j = 0; j < r.emails.length; j++) { if (r.emails[j].i === pe.e) { em = r.emails[j]; break; } } em = em || {};
+    var sigs = pe.signals || []; var c = pe.coaching || {};
+    h += '<div class="erow"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div><span class="dir ' + (em.dir === 'in' ? 'in' : 'out') + '">' + (em.dir === 'in' ? 'IN' : 'OUT') + '</span><strong>#' + pe.e + '</strong> ' + esc(em.from) + ' &middot; ' + esc(em.date) + '</div>';
+    h += '<div style="font-size:11px;font-weight:600;color:#666">Intent ' + pe.intent + ' &middot; Win ' + pe.win_pct + '%</div></div>';
+    if (pe.sum) h += '<div style="font-size:12px;line-height:1.5;margin-bottom:4px">' + esc(pe.sum) + '</div>';
+    for (var si = 0; si < sigs.length; si++) { h += '<span class="sg ' + sigs[si].sev + '">' + sigs[si].type + ': ' + esc(sigs[si].desc) + '</span> '; }
+    if (c.good) h += '<div class="good">&#x2713; ' + esc(c.good) + '</div>';
+    if (c.better) h += '<div class="better">&#x1F4A1; ' + esc(c.better) + '</div>';
+    h += '</div>';
+  }
+  h += '<div class="ft">Generated by ClearSignals AI v0.8 &middot; ' + new Date().toLocaleString() + '</div></body></html>';
+  var blob = new Blob([h], { type: 'text/html' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'ClearSignals_Analysis_' + new Date().toISOString().slice(0, 10) + '.html';
+  a.click();
+}
+</script>
+</body>
+</html>

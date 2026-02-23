@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ClearSignals AI: Communication Intelligence Platform — India &amp; SE Asia Investor Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'serif': ['Playfair Display', 'serif'],
+                        'sans': ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        'primary': '#1a365d',
+                        'secondary': '#2d3748',
+                        'accent': '#4299e1',
+                        'neutral': '#f7fafc',
+                        'earth': '#8b7355'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { overflow-x: hidden; }
+        .hero-gradient { background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%); }
+        .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 2rem;
+        }
+        .hero-content { grid-column: 1; grid-row: 1 / 3; }
+        .hero-visual { grid-column: 2; grid-row: 1; }
+        .hero-stats { grid-column: 2; grid-row: 2; }
+        .roadmap-line { position: relative; }
+        .roadmap-line::before {
+            content: '';
+            position: absolute;
+            left: 1.5rem;
+            top: 3rem;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #4299e1, #805ad5);
+        }
+        .roadmap-line:last-child::before { display: none; }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (max-width: 767px) { body { overflow-x: hidden; } }
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+            .hero-content { grid-row: 1; }
+            .hero-visual { grid-row: 2; }
+            .hero-stats { grid-row: 3; }
+        }
+        @media (max-width: 640px) {
+            .hero-content h1 { font-size: 2rem; }
+            .hero-content p { font-size: 1rem; }
+            .hero-stats .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="bg-neutral font-sans text-gray-800">
+
+    <!-- Fixed Table of Contents -->
+    <nav id="toc" class="fixed left-0 top-0 h-full w-72 bg-white shadow-xl z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-y-auto overflow-x-hidden">
+      <div class="p-6 border-b border-gray-200">
+        <h3 class="font-serif font-bold text-lg text-primary mb-1">Contents</h3>
+        <p class="text-sm text-gray-600">India &amp; SE Asia Investor Edition</p>
+      </div>
+      <ul class="p-4 space-y-2 text-sm">
+        <li><a href="#executive-summary" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Executive Summary</a></li>
+        <li><a href="#the-problem" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">The Problem</a></li>
+        <li><a href="#the-solution" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">The Solution</a></li>
+        <li><a href="#multi-channel" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors pl-6 text-xs">Multi-Channel Intelligence</a></li>
+        <li><a href="#dual-version" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors pl-6 text-xs">Dual-Version Content</a></li>
+        <li><a href="#voice-agents" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors pl-6 text-xs">Corporate Voice Agents</a></li>
+        <li><a href="#market-opportunity" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Market Opportunity</a></li>
+        <li><a href="#competitive-landscape" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Competitive Landscape</a></li>
+        <li><a href="#business-model" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Business Model</a></li>
+        <li><a href="#technology" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Technology</a></li>
+        <li><a href="#roadmap" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Product Roadmap</a></li>
+        <li><a href="#team" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Founding Team</a></li>
+        <li><a href="#timing" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Market Timing</a></li>
+        <li><a href="#investment" class="block py-2 px-3 rounded hover:bg-gray-100 text-gray-700 hover:text-primary transition-colors">Investment Summary</a></li>
+      </ul>
+    </nav>
+
+    <!-- Mobile TOC Toggle -->
+    <button id="toc-toggle" class="lg:hidden fixed top-4 left-4 z-50 bg-primary text-white p-3 rounded-full shadow-lg">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div id="toc-backdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+
+    <!-- Main Content -->
+    <main class="min-h-screen lg:ml-72">
+
+      <!-- Hero Section -->
+      <section class="hero-gradient relative overflow-hidden">
+        <div class="container mx-auto px-4 md:px-8 py-8 md:py-16">
+          <div class="bento-grid max-w-7xl">
+            <div class="hero-content text-white">
+              <div class="mb-6">
+                <span class="text-sm font-medium text-blue-200 uppercase tracking-wider">CLEARSIGNALS AI&trade;</span>
+                <span class="text-xs ml-4 opacity-75">CONFIDENTIAL &bull; INDIA &amp; SE ASIA INVESTOR EDITION &bull; FEBRUARY 2026</span>
+              </div>
+              <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-shadow leading-tight">
+                <em class="italic">Cross-Cultural</em><br/>
+                Communication<br/>
+                <span class="text-blue-200">Intelligence</span>
+              </h1>
+              <p class="text-base sm:text-lg md:text-xl text-blue-100 mb-8 leading-relaxed max-w-2xl">
+                India's $245B IT services industry and SE Asia's $40B BPO sector lose billions annually to cross-cultural communication failures. ClearSignals AI is the first platform that understands <em>how</em> your people communicate&mdash;and adapts AI-generated content to bridge the cultural gap between high-context Asian markets and low-context Western clients.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                  <div class="text-2xl font-bold">$285B+</div>
+                  <div class="text-sm opacity-75">India + SE Asia Serviceable Market</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                  <div class="text-2xl font-bold">5M+</div>
+                  <div class="text-sm opacity-75">IT/BPO Professionals in India Alone</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4">
+                  <div class="text-2xl font-bold">62.7%</div>
+                  <div class="text-sm opacity-75">Vertical AI Agent CAGR</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hero-visual">
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop" alt="Data visualization representing communication intelligence" class="w-full h-48 md:h-64 object-cover rounded-lg shadow-2xl"/>
+            </div>
+
+            <div class="hero-stats">
+              <div class="bg-white rounded-lg p-6 shadow-xl">
+                <h3 class="font-serif font-bold text-lg text-primary mb-4">Platform Modules</h3>
+                <table class="w-full text-sm">
+                  <tbody>
+                    <tr class="bg-blue-50"><td class="py-1.5 pr-4 whitespace-nowrap font-medium text-primary">Cultural CPP&trade;</td><td class="py-1.5 font-medium text-right text-primary">Cross-Cultural AI</td></tr>
+                    <tr><td class="py-1.5 pr-4 whitespace-nowrap">Basic CPP&trade;</td><td class="py-1.5 font-medium text-right">Personality Profile + Grammar DNA</td></tr>
+                    <tr><td class="py-1.5 pr-4 whitespace-nowrap">Enhanced CPP&trade;</td><td class="py-1.5 font-medium text-right">-9 to +9 Spectrum</td></tr>
+                    <tr><td class="py-1.5 pr-4 whitespace-nowrap">Sales CPP&trade;</td><td class="py-1.5 font-medium text-right">Deal Prediction</td></tr>
+                    <tr class="border-t"><td class="py-1.5 pt-3 pr-4 whitespace-nowrap text-primary font-medium">Voice Agents</td><td class="py-1.5 pt-3 font-medium text-right">Corporate Personality</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Executive Summary -->
+      <section id="executive-summary" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-4xl font-bold text-primary mb-8">Executive Summary</h2>
+
+            <div class="prose prose-lg max-w-none">
+              <p class="text-xl text-gray-700 leading-relaxed mb-8">
+                Every day, millions of IT professionals, BPO agents, and business developers across India and SE Asia communicate with Western clients&mdash;and cultural misalignment silently erodes trust, delays deals, and costs contracts. ClearSignals AI is the first platform that builds a <strong>Cultural Communication Personality Profile&trade;</strong> (CPP) from actual communication history, then generates content that bridges the gap between high-context Asian communication styles and low-context Western expectations.
+              </p>
+
+              <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-orange-50 p-6 rounded-lg border-l-4 border-orange-400">
+                  <h3 class="font-serif text-xl font-semibold mb-4">The Cross-Cultural Problem</h3>
+                  <p class="text-gray-700">Indian and SE Asian professionals are taught to communicate indirectly, show deference, and avoid confrontation&mdash;exactly the opposite of what Western clients interpret as confidence and competence. This cultural mismatch costs the IT services industry an estimated <strong>15-20% in lost contract renewals</strong> annually.</p>
+                </div>
+                <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-400">
+                  <h3 class="font-serif text-xl font-semibold mb-4">Our APAC-First Approach</h3>
+                  <p class="text-gray-700">We analyze actual cross-cultural communication across email, call transcripts, and texts to build profiles that understand <em>both sides</em>&mdash;how your team communicates, how their Western counterparts expect to be communicated with, and exactly where the gap creates friction.</p>
+                </div>
+              </div>
+
+              <h3 class="font-serif text-2xl font-semibold mb-6">India &amp; SE Asia Market Opportunity</h3>
+              <p class="text-gray-700 mb-6">
+                The cross-cultural communication intelligence opportunity in India and SE Asia dwarfs the US domestic market:
+              </p>
+
+              <div class="bg-blue-50 p-6 rounded-lg mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                  <div>
+                    <div class="text-3xl font-bold text-primary">$245B</div>
+                    <div class="text-sm text-gray-600 mt-1">India IT Services Industry</div>
+                  </div>
+                  <div>
+                    <div class="text-3xl font-bold text-primary">$40B</div>
+                    <div class="text-sm text-gray-600 mt-1">SE Asia BPO Market</div>
+                  </div>
+                  <div>
+                    <div class="text-3xl font-bold text-primary">5M+</div>
+                    <div class="text-sm text-gray-600 mt-1">India IT/BPO Workers</div>
+                  </div>
+                  <div>
+                    <div class="text-3xl font-bold text-primary">1.3M+</div>
+                    <div class="text-sm text-gray-600 mt-1">SE Asia BPO Workers</div>
+                  </div>
+                </div>
+              </div>
+                <h4 class="font-semibold mb-4">APAC Target Verticals:</h4>
+                <ul class="space-y-2 text-gray-700">
+                  <li>&bull; <strong>IT Services &amp; Consulting:</strong> TCS, Infosys, Wipro, HCL&mdash;5M+ professionals communicating daily with Western clients</li>
+                  <li>&bull; <strong>BPO &amp; Customer Operations:</strong> Philippines, Vietnam, India call centers managing cross-cultural client relationships</li>
+                  <li>&bull; <strong>Cross-Border Commerce:</strong> SE Asian manufacturers, exporters, and service providers selling to US/EU markets</li>
+                  <li>&bull; <strong>Global Capability Centers (GCCs):</strong> 1,600+ multinational GCCs in India alone, each with internal cross-cultural communication friction</li>
+                </ul>
+              </div>
+
+              <h3 class="font-serif text-2xl font-semibold mb-6">Key Differentiators for APAC</h3>
+              <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-globe-asia text-white text-xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Cross-Cultural AI</h4>
+                  <p class="text-sm text-gray-600">Bridges high-context &amp; low-context communication gaps automatically</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-layer-group text-white text-xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Multi-Channel</h4>
+                  <p class="text-sm text-gray-600">Email + call transcripts + WhatsApp/text analysis</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-white text-xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Team-Wide Deployment</h4>
+                  <p class="text-sm text-gray-600">Scale cultural communication training across 1,000+ agent teams</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-chart-line text-white text-xl"></i>
+                  </div>
+                  <h4 class="font-semibold mb-2">Client Retention Predictor</h4>
+                  <p class="text-sm text-gray-600">Trajectory mapping predicts account churn before it happens</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Problem -->
+      <section id="the-problem" class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">The Problem: The Cross-Cultural Communication Tax</h2>
+
+          <div class="grid lg:grid-cols-2 gap-12">
+            <div>
+              <h3 class="font-serif text-2xl font-semibold mb-6">The $50B Cultural Misalignment Problem</h3>
+              <p class="text-gray-700 mb-6">
+                Indian and SE Asian IT professionals are among the most technically skilled in the world&mdash;but cross-cultural communication friction silently erodes client trust. The same message that conveys respect in Mumbai can signal uncertainty in Manhattan.
+              </p>
+
+              <div class="bg-red-50 p-4 rounded-lg mb-6">
+                <h4 class="font-semibold text-red-800 mb-2">High-Context vs. Low-Context Collision</h4>
+                <div class="space-y-2 text-sm text-red-700">
+                  <p>&bull; <strong>Indian professional writes:</strong> "We are looking into this matter and will revert at the earliest convenience"</p>
+                  <p>&bull; <strong>US client reads:</strong> Vague, non-committal, possibly stalling</p>
+                  <p>&bull; <strong>Intent was:</strong> Respectful acknowledgment with urgency commitment</p>
+                </div>
+              </div>
+
+              <div class="bg-orange-50 p-4 rounded-lg mb-6">
+                <h4 class="font-semibold text-orange-800 mb-2">The Contract Renewal Risk</h4>
+                <p class="text-orange-700 text-sm">IT services companies report <strong>15-20% of contract renewals</strong> are influenced by "communication quality" complaints&mdash;not technical delivery. The work is excellent; the communication <em>about</em> the work creates doubt.</p>
+              </div>
+
+              <h3 class="font-serif text-2xl font-semibold mb-6 mt-8">Cultural Communication Patterns</h3>
+              <div class="space-y-3">
+                <div class="flex items-start space-x-3">
+                  <div class="w-3 h-3 bg-orange-500 rounded-full mt-2"></div>
+                  <div><strong>Indian English:</strong> Indirect framing, hedging language, honorific structures, relationship-first communication</div>
+                </div>
+                <div class="flex items-start space-x-3">
+                  <div class="w-3 h-3 bg-green-500 rounded-full mt-2"></div>
+                  <div><strong>Vietnamese/Thai:</strong> High deference, avoidance of direct "no," context-dependent meaning</div>
+                </div>
+                <div class="flex items-start space-x-3">
+                  <div class="w-3 h-3 bg-blue-500 rounded-full mt-2"></div>
+                  <div><strong>Filipino English:</strong> Strong English fluency but with subtle formality patterns that Western clients misread</div>
+                </div>
+                <div class="flex items-start space-x-3">
+                  <div class="w-3 h-3 bg-red-500 rounded-full mt-2"></div>
+                  <div><strong>US/UK Client Expectation:</strong> Direct, action-oriented, timeline-specific, low-context</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-serif text-2xl font-semibold mb-6">The Scale Problem</h3>
+              <p class="text-gray-700 mb-6">
+                Traditional solutions&mdash;cultural sensitivity training, communication workshops, expat mentoring&mdash;don't scale. You can't put 5 million IT workers through a 3-day Western communication bootcamp. Even if you could, the lessons fade within weeks.
+              </p>
+
+              <div class="bg-purple-50 p-4 rounded-lg mb-6">
+                <h4 class="font-semibold text-purple-800 mb-2">Current "Solutions" That Fail</h4>
+                <div class="space-y-2 text-sm text-purple-700">
+                  <p>&bull; <strong>Cultural training workshops:</strong> $2,000-5,000/person, forgotten in 30 days</p>
+                  <p>&bull; <strong>Grammarly/ProWritingAid:</strong> Fix grammar, destroy cultural personality</p>
+                  <p>&bull; <strong>AI writing tools:</strong> Generate Western-default content that sounds nothing like the writer</p>
+                  <p>&bull; <strong>Template libraries:</strong> One-size-fits-all phrases that clients recognize as canned</p>
+                </div>
+              </div>
+
+              <h3 class="font-serif text-2xl font-semibold mb-6 mt-8">The AI Rework Tax (Amplified in APAC)</h3>
+              <p class="text-gray-700 mb-4">
+                The global AI rework tax is 37%&mdash;for every 10 hours saved, 4 are lost to rework. In cross-cultural contexts, <strong>this doubles to 60-70%</strong> because AI tools generate Western-default content that APAC professionals must completely rewrite to sound like themselves while also bridging the cultural gap.
+              </p>
+
+              <div class="bg-yellow-50 p-4 rounded-lg mb-6">
+                <h4 class="font-semibold text-yellow-800 mb-2">The BPO Agent Retention Crisis</h4>
+                <p class="text-yellow-700 text-sm">BPO industry turnover in India and Philippines: <strong>30-40% annually</strong>. When agents leave, their learned cultural communication skills walk out the door. ClearSignals AI captures and transfers that institutional cultural intelligence.</p>
+              </div>
+
+              <div class="bg-orange-50 p-4 rounded-lg mt-6">
+                <h4 class="font-semibold text-orange-800 mb-2">No Platform Solves This</h4>
+                <p class="text-orange-700 text-sm">Gong analyzes voice calls. Grammarly fixes grammar. Jasper generates generic content. <strong>No platform understands cross-cultural communication personality and bridges the gap automatically.</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The Solution -->
+      <section id="the-solution" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">The Solution: Creator Personality Profile&trade; Platform</h2>
+
+          <!-- Privacy-First Architecture -->
+          <div class="mb-12">
+            <div class="bg-primary text-white p-8 rounded-xl mb-8">
+              <h3 class="font-serif text-2xl font-semibold mb-4">Privacy-First Architecture</h3>
+              <p class="text-blue-100 mb-6">
+                Raw communication content never leaves the user's device. Only synthesized personality profiles are transmitted to the cloud.
+              </p>
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white/10 p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2">Local Processing</h4>
+                  <p class="text-sm text-blue-100">All analysis occurs on-device; email, call transcripts, and texts processed locally</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2">Anonymized Cloud</h4>
+                  <p class="text-sm text-blue-100">PII-stripped pattern data only sent for LLM synthesis</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2">Profile Storage</h4>
+                  <p class="text-sm text-blue-100">CPPs stored as vector embeddings in semantic database for instant retrieval, pattern matching, and cross-profile intelligence</p>
+                </div>
+              </div>
+              <p class="text-xs text-blue-200 mt-4 text-center italic"><i class="fas fa-file-contract mr-1"></i> Local-to-cloud privacy architecture with irreversible PII transformation &mdash; patent pending</p>
+            </div>
+          </div>
+
+          <!-- Multi-Channel Intelligence -->
+          <div id="multi-channel" class="mb-12 fade-in">
+            <h3 class="font-serif text-3xl font-semibold mb-8 text-center">Multi-Channel Communication Intelligence&trade;</h3>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">
+              ClearSignals AI doesn't just read your emails. It ingests <strong>call transcripts</strong>, <strong>text messages</strong>, and <strong>email</strong> to build the most complete communication profile possible&mdash;capturing how your personality expresses across channels.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl text-center">
+                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i class="fas fa-envelope text-white text-xl"></i>
+                </div>
+                <h4 class="font-serif text-lg font-semibold mb-3">Email Analysis</h4>
+                <p class="text-sm text-gray-700">12 months of sent and received email via IMAP. Captures formality levels, structural patterns, persuasion style, and relationship dynamics.</p>
+                <div class="mt-3 text-xs text-blue-600 font-medium">AVAILABLE NOW</div>
+              </div>
+
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl text-center">
+                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i class="fas fa-phone-alt text-white text-xl"></i>
+                </div>
+                <h4 class="font-serif text-lg font-semibold mb-3">Call Transcript Ingestion</h4>
+                <p class="text-sm text-gray-700">Import transcripts from Zoom, Teams, Gong, and other platforms. Captures conversational cadence, verbal patterns, and negotiation style.</p>
+                <div class="mt-3 text-xs text-green-600 font-medium">AVAILABLE NOW</div>
+              </div>
+
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl text-center">
+                <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i class="fas fa-comment-dots text-white text-xl"></i>
+                </div>
+                <h4 class="font-serif text-lg font-semibold mb-3">Text Message Analysis</h4>
+                <p class="text-sm text-gray-700">SMS and messaging platform history to capture informal personality&mdash;the authentic, unguarded communication style that reveals true personality.</p>
+                <div class="mt-3 text-xs text-purple-600 font-medium">AVAILABLE NOW</div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-xl">
+              <h4 class="font-semibold text-center mb-4">Why Multi-Channel Matters</h4>
+              <p class="text-sm text-gray-700 text-center max-w-2xl mx-auto">
+                You write differently in email than you speak on calls. You text differently than both. A single-channel profile captures a fraction of who you are. ClearSignals AI builds a <strong>unified communication identity</strong> that understands the full range of your professional personality, producing content that's authentic regardless of the output medium.
+              </p>
+            </div>
+          </div>
+
+          <!-- Dual-Version Content Creation -->
+          <div id="dual-version" class="mb-12 fade-in">
+            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-8 rounded-xl">
+              <h3 class="font-serif text-2xl font-semibold mb-6 text-center">Dual-Version Content Creation&trade;</h3>
+              <p class="text-gray-700 text-center max-w-3xl mx-auto mb-8">
+                Every content request produces <strong>two distinct versions</strong>, each approaching your message from a different angle&mdash;giving you a faster path to the message you actually intended.
+              </p>
+
+              <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                  <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
+                      <span class="text-white font-bold">A</span>
+                    </div>
+                    <h4 class="font-semibold text-lg">Profile-True Version</h4>
+                  </div>
+                  <p class="text-sm text-gray-700 mb-3">
+                    Maximizes fidelity to your established communication profile. Mirrors your typical sentence structure, vocabulary density, and formality patterns for the given recipient.
+                  </p>
+                  <div class="text-xs text-gray-500 italic">Best for: routine correspondence, established relationships, maintaining consistency</div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                  <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center mr-3">
+                      <span class="text-white font-bold">B</span>
+                    </div>
+                    <h4 class="font-semibold text-lg">Context-Optimized Version</h4>
+                  </div>
+                  <p class="text-sm text-gray-700 mb-3">
+                    Adapts your personality for the specific situation&mdash;adjusting emphasis, structure, or persuasion approach while staying within your natural range. Pushes toward effectiveness.
+                  </p>
+                  <div class="text-xs text-gray-500 italic">Best for: high-stakes messages, new relationships, cross-cultural communication</div>
+                </div>
+              </div>
+
+              <div class="text-center mt-6">
+                <p class="text-sm text-gray-600">
+                  <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                  The dual-version approach eliminates the "single draft trap" and reduces AI rework time by giving you two starting points that bracket your intent.
+                </p>
+                <p class="text-xs text-indigo-600 mt-3 italic"><i class="fas fa-file-contract mr-1"></i> Profile-divergent content generation from single communication identity &mdash; patent pending</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Grammatical Fingerprinting -->
+          <div class="mb-12 fade-in">
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-8 rounded-xl">
+              <h3 class="font-serif text-2xl font-semibold mb-6">Grammatical Fingerprinting&trade; &amp; Stylistic DNA</h3>
+              <p class="text-gray-700 mb-6">
+                Most AI tools "fix" your writing. ClearSignals AI <em>learns</em> it. The initial analysis includes a deep grammatical profile that identifies your unique stylistic habits&mdash;not to correct them, but to replicate them.
+              </p>
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2 text-sm">Punctuation Patterns</h4>
+                  <p class="text-xs text-gray-600">
+                    Detects intentional "..." usage (signaling a pause or trailing thought vs. its technical omission meaning), em dash frequency, semicolon comfort level, and exclamation point tendencies.
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2 text-sm">Structural Signatures</h4>
+                  <p class="text-xs text-gray-600">
+                    Sentence fragment usage for emphasis, paragraph length patterns, greeting and closing conventions, how you transition between topics.
+                  </p>
+                </div>
+                <div class="bg-white p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2 text-sm">Vocabulary &amp; Register</h4>
+                  <p class="text-xs text-gray-600">
+                    Industry jargon frequency, colloquialism patterns, formality shifts by recipient, and the specific words you overuse (and the ones you never use).
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-6 bg-white p-4 rounded-lg border-l-4 border-amber-400">
+                <p class="text-sm text-gray-700">
+                  <strong>Example:</strong> If you consistently use "..." to indicate a thoughtful pause in casual emails ("I was thinking about the proposal... and I think we should go a different direction"), ClearSignals AI replicates this pattern in generated content rather than replacing it with a period or comma. Your quirks are your personality.
+                </p>
+              </div>
+              <p class="text-xs text-amber-700 mt-4 italic text-right"><i class="fas fa-file-contract mr-1"></i> Stylistic pattern replication from unfiltered communication analysis &mdash; patent pending</p>
+            </div>
+          </div>
+
+          <!-- Four Modules -->
+          <div class="mb-12">
+            <h3 class="font-serif text-3xl font-semibold mb-8 text-center">Four Progressive Value Modules</h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                  <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mr-4">
+                    <span class="text-white font-bold">1</span>
+                  </div>
+                  <h4 class="font-serif text-xl font-semibold">Basic CPP</h4>
+                </div>
+                <p class="text-gray-700 mb-4">
+                  Complete writing DNA from 12 months of actual communication across email, call transcripts, and texts. Captures personality characteristics, structural patterns, grammatical fingerprints, and persuasion style.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Multi-channel personality profile</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Grammatical fingerprinting &amp; stylistic DNA</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Dual-version content generation</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Monthly incremental updates</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>API access for content generation</span></div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                  <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mr-4">
+                    <span class="text-white font-bold">2</span>
+                  </div>
+                  <h4 class="font-serif text-xl font-semibold">Enhanced CPP</h4>
+                </div>
+                <p class="text-gray-700 mb-4">
+                  Formality Spectrum&trade; from -9 (most casual) to +9 (most formal). Automatic contact classification and audience-adaptive generation.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>AI-suggested formality ratings</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Domain-level defaults</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Automatic recipient detection</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Channel-appropriate tone shifting</span></div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                  <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mr-4">
+                    <span class="text-white font-bold">3</span>
+                  </div>
+                  <h4 class="font-serif text-xl font-semibold">Sales CPP</h4>
+                </div>
+                <p class="text-gray-700 mb-4">
+                  CRM integration captures two critical data points: when an opportunity opens and when it closes (won or lost). ClearSignals AI maps the <em>entire communication trajectory</em> between those bookends&mdash;tracking how tone, formality, and engagement evolved throughout the deal lifecycle.
+                </p>
+                <div class="bg-white p-4 rounded-lg mb-4">
+                  <h5 class="font-semibold text-sm mb-3">Communication Trajectory Mapping&trade; Examples:</h5>
+                  <div class="space-y-2 text-xs text-gray-700">
+                    <div class="flex items-center"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded mr-2 font-medium whitespace-nowrap">WIN Pattern</span> Formal &rarr; Casual &rarr; Return to Formal at close</div>
+                    <div class="flex items-center"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded mr-2 font-medium whitespace-nowrap">WIN Pattern</span> Steady warming with increasing response speed</div>
+                    <div class="flex items-center"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded mr-2 font-medium whitespace-nowrap">LOSS Pattern</span> Formality drops, never recovers, replies slow</div>
+                    <div class="flex items-center"><span class="bg-red-100 text-red-800 px-2 py-0.5 rounded mr-2 font-medium whitespace-nowrap">LOSS Pattern</span> Competitor language appears mid-cycle, tone shifts</div>
+                  </div>
+                </div>
+                <p class="text-gray-700 mb-2 text-sm">
+                  With every closed deal&mdash;won or lost&mdash;the pattern library grows. The system becomes increasingly accurate at predicting outcomes for <em>active</em> opportunities by matching their communication trajectory against proven historical patterns.
+                </p>
+                <p class="text-xs text-green-700 mb-4 italic"><i class="fas fa-file-contract mr-1"></i> CRM-to-communication trajectory correlation and predictive scoring methodology &mdash; patent pending</p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>CRM open/close date mapping to communication timeline</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Tone &amp; formality trajectory tracking across deal lifecycle</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Win/loss pattern library that compounds over time</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Real-time trajectory matching for active opportunities</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Cross-channel signal correlation (email + call + text)</span></div>
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl">
+                <div class="flex items-center mb-4">
+                  <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mr-4">
+                    <span class="text-white font-bold">4</span>
+                  </div>
+                  <h4 class="font-serif text-xl font-semibold">Cultural CPP</h4>
+                </div>
+                <p class="text-gray-700 mb-4">
+                  Cross-cultural intelligence layer adapting communication for cultural norms, hierarchy expectations, and directness calibration across international business contexts.
+                </p>
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>High/low context calibration</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Hierarchy sensitivity adjustment</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Directness expectation mapping</span></div>
+                  <div class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i><span>Linguistic protocol awareness</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Corporate Voice Agents -->
+          <div id="voice-agents" class="mb-12 fade-in">
+            <div class="bg-gradient-to-r from-primary to-secondary text-white p-8 rounded-xl">
+              <h3 class="font-serif text-2xl font-semibold mb-4">
+                <i class="fas fa-microphone-alt mr-3"></i>Corporate Voice Agents
+              </h3>
+              <p class="text-blue-100 mb-6">
+                Voice AI agents imbued with your organization's actual communication personality. Not a generic chatbot voice&mdash;an agent that speaks, responds, and engages the way your best people do.              </p>
+
+              <div class="grid md:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white/10 p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2">CPP-Driven Personality</h4>
+                  <p class="text-sm text-blue-100">Voice agents inherit your Creator Personality Profile&mdash;matching formality, vocabulary, persuasion patterns, and even your grammatical quirks in spoken form.</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2">Brand-Consistent Engagement</h4>
+                  <p class="text-sm text-blue-100">Deploy agents that sound like your company culture, not a Silicon Valley default. Train on aggregate team profiles for consistent organizational personality.</p>
+                </div>
+                <div class="bg-white/10 p-4 rounded-lg">
+                  <h4 class="font-semibold mb-2">Cultural Adaptation</h4>
+                  <p class="text-sm text-blue-100">Voice agents automatically adjust formality, directness, and pacing based on the Cultural CPP module&mdash;critical for international customer interactions.</p>
+                </div>
+              </div>
+
+              <div class="bg-white/5 border border-white/20 p-4 rounded-lg">
+                <p class="text-sm text-blue-200 text-center">
+                  <i class="fas fa-bolt text-yellow-300 mr-2"></i>
+                  <strong>Built on proven infrastructure:</strong> Leveraging platforms like ElevenLabs and Cartesia for hyper-realistic voice synthesis with sub-100ms latency. ClearSignals adds the personality layer that makes these voices <em>yours</em>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sales Leadership Dashboard -->
+          <div class="bg-gray-50 p-8 rounded-xl fade-in">
+            <h3 class="font-serif text-2xl font-semibold mb-6">Sales Leadership Dashboard</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-gray-200">
+                    <th class="text-left py-3 px-4 font-semibold">Opportunity</th>
+                    <th class="text-left py-3 px-4 font-semibold">Health</th>
+                    <th class="text-left py-3 px-4 font-semibold">Trend</th>
+                    <th class="text-left py-3 px-4 font-semibold">Key Signal</th>
+                    <th class="text-right py-3 px-4 font-semibold">Revenue</th>
+                    <th class="text-left py-3 px-4 font-semibold">Close</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-gray-100">
+                    <td class="py-3 px-4 font-medium">Acme Industries</td>
+                    <td class="py-3 px-4"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Healthy</span></td>
+                    <td class="py-3 px-4"><span class="text-green-600">&#8599; Warming</span></td>
+                    <td class="py-3 px-4">85% win trajectory match</td>
+                    <td class="py-3 px-4 text-right">$280K</td>
+                    <td class="py-3 px-4">Q2 2026</td>
+                  </tr>
+                  <tr class="border-b border-gray-100">
+                    <td class="py-3 px-4 font-medium">BigCorp</td>
+                    <td class="py-3 px-4"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Watch</span></td>
+                    <td class="py-3 px-4"><span class="text-red-600">&#8600; Cooling</span></td>
+                    <td class="py-3 px-4">Competitor language detected</td>
+                    <td class="py-3 px-4 text-right">$450K</td>
+                    <td class="py-3 px-4">Q3 2026</td>
+                  </tr>
+                  <tr>
+                    <td class="py-3 px-4 font-medium">MegaBank</td>
+                    <td class="py-3 px-4"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Alert</span></td>
+                    <td class="py-3 px-4"><span class="text-red-600">&#8600;&#8600; Rapid</span></td>
+                    <td class="py-3 px-4">Matches loss trajectory</td>
+                    <td class="py-3 px-4 text-right">$1.2M</td>
+                    <td class="py-3 px-4">Q3 2026</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Market Opportunity -->
+      <section id="market-opportunity" class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">India &amp; SE Asia Market Opportunity</h2>
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-orange-50 p-8 rounded-xl mb-12 border border-orange-200">
+              <h3 class="font-serif text-2xl font-semibold text-orange-900 mb-4">The APAC Cross-Cultural Communication Market</h3>
+              <p class="text-gray-700 mb-6">India and SE Asia's IT services and BPO industries generate $285B+ annually&mdash;nearly all of it serving Western clients across cultural boundaries. ClearSignals AI captures value at every cross-cultural communication touchpoint.</p>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-semibold mb-3">India Market</h4>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span>IT Services (TCS, Infosys, Wipro, HCL, Tech Mahindra)</span><span class="font-bold">$245B</span></div>
+                    <div class="flex justify-between"><span>BPO &amp; Customer Operations</span><span class="font-bold">$38B</span></div>
+                    <div class="flex justify-between"><span>Global Capability Centers (GCCs)</span><span class="font-bold">1,600+</span></div>
+                    <div class="flex justify-between"><span>IT/BPO Workforce</span><span class="font-bold">5.4M</span></div>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-3">SE Asia Market</h4>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span>Philippines BPO</span><span class="font-bold">$32B</span></div>
+                    <div class="flex justify-between"><span>Vietnam IT Outsourcing (fastest growing)</span><span class="font-bold">$4.5B</span></div>
+                    <div class="flex justify-between"><span>Malaysia/Thailand/Indonesia IT Services</span><span class="font-bold">$8B+</span></div>
+                    <div class="flex justify-between"><span>SE Asia BPO/IT Workforce</span><span class="font-bold">1.8M+</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+              <div class="text-center">
+                <div class="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-globe-asia text-2xl text-orange-600"></i></div>
+                <h4 class="font-semibold text-lg mb-2">Cross-Cultural Communication</h4>
+                <p class="text-gray-600 text-sm mb-4">Untapped $10B+ opportunity</p>
+                <p class="text-xs text-gray-500">No existing AI platform bridges high-context/low-context gap</p>
+              </div>
+              <div class="text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-users text-2xl text-green-600"></i></div>
+                <h4 class="font-semibold text-lg mb-2">Enterprise Team Deployment</h4>
+                <p class="text-gray-600 text-sm mb-4">5,000-50,000 seat deals</p>
+                <p class="text-xs text-gray-500">IT services companies deploy tools across entire delivery teams</p>
+              </div>
+              <div class="text-center">
+                <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-headset text-2xl text-purple-600"></i></div>
+                <h4 class="font-semibold text-lg mb-2">BPO Agent Enablement</h4>
+                <p class="text-gray-600 text-sm mb-4">1.3M+ agents in Philippines alone</p>
+                <p class="text-xs text-gray-500">Reduce training time, improve retention, scale cultural competency</p>
+              </div>
+            </div>
+
+            <div class="bg-red-50 p-8 rounded-xl mb-12">
+              <h3 class="font-serif text-2xl font-semibold mb-4 text-red-800">The "Hero Account Manager" Problem in APAC</h3>
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center"><div class="text-3xl font-bold text-red-700">10-15%</div><div class="text-sm text-gray-600">of delivery managers handle <strong>70%+</strong> of key client relationships</div></div>
+                <div class="text-center"><div class="text-3xl font-bold text-red-700">30-40%</div><div class="text-sm text-gray-600">annual turnover in India/PH BPO</div></div>
+                <div class="text-center"><div class="text-3xl font-bold text-red-700">$0</div><div class="text-sm text-gray-600">cultural communication intelligence captured when they leave</div></div>
+              </div>
+              <p class="text-sm text-gray-700 mt-4 text-center">ClearSignals AI captures top performers' cross-cultural communication patterns and scales them across entire delivery teams&mdash;turning individual cultural intuition into organizational intelligence.</p>
+            </div>
+
+            <div class="bg-green-50 p-8 rounded-xl border border-green-200">
+              <h3 class="font-serif text-2xl font-semibold mb-4 text-green-900">Go-To-Market: India &amp; SE Asia First</h3>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-semibold mb-3">Phase 1: Bangalore &amp; Hyderabad</h4>
+                  <p class="text-sm text-gray-700">Target top 50 IT services companies and GCCs. Pilot with delivery teams serving US/UK clients. Prove ROI through contract renewal improvement metrics.</p>
+                </div>
+                <div>
+                  <h4 class="font-semibold mb-3">Phase 2: Manila, Ho Chi Minh City &amp; Singapore</h4>
+                  <p class="text-sm text-gray-700">Expand to Philippines BPO market (largest employer), Vietnam's fast-growing IT outsourcing sector, and Singapore as regional enterprise hub.</p>
+                </div>
+              </div>
+              <div class="mt-6 p-4 bg-white rounded-lg">
+                <p class="text-sm text-gray-700"><i class="fas fa-map-marker-alt text-green-600 mr-2"></i><strong>Strategic Advantage:</strong> Founding team relocating to Vietnam in March 2025, establishing on-the-ground presence in SE Asia's fastest-growing IT market with direct access to India, Philippines, and Singapore corridors.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Competitive Landscape -->
+      <section id="competitive-landscape" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">Competitive Landscape &amp; Differentiation</h2>
+          <div class="max-w-4xl mx-auto">
+            <div class="mb-12">
+              <h3 class="font-serif text-2xl font-semibold mb-6">Feature Comparison Matrix</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b-2 border-primary">
+                      <th class="text-left py-4 px-3 font-semibold">Competitor</th>
+                      <th class="text-center py-4 px-3 font-semibold">Cross-Cultural</th>
+                      <th class="text-center py-4 px-3 font-semibold">Multi-Channel</th>
+                      <th class="text-center py-4 px-3 font-semibold">Dual Version</th>
+                      <th class="text-center py-4 px-3 font-semibold">APAC Focus</th>
+                      <th class="text-center py-4 px-3 font-semibold">Privacy-First</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-gray-200 bg-blue-50">
+                      <td class="py-4 px-3 font-bold">ClearSignals AI</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Cultural CPP&trade;</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">3 channels</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Yes</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">APAC-First</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Local-first</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-200">
+                      <td class="py-4 px-3">Gong</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                      <td class="py-4 px-3 text-center">Voice only</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                      <td class="py-4 px-3 text-center">US-focused</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                    </tr>
+                    <tr class="border-b border-gray-200">
+                      <td class="py-4 px-3">Grammarly Business</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Erases culture</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Text only</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                      <td class="py-4 px-3 text-center">Global generic</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                    </tr>
+                    <tr>
+                      <td class="py-4 px-3">Jasper AI</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                      <td class="py-4 px-3 text-center">US-focused</td>
+                      <td class="py-4 px-3 text-center"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">No</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+              <div class="bg-orange-50 p-6 rounded-xl">
+                <h4 class="font-serif text-lg font-semibold mb-3">Cultural Intelligence vs. Grammar Correction</h4>
+                <p class="text-sm text-gray-700">Grammarly corrects Indian English to American English&mdash;erasing the communicator's identity. ClearSignals AI <em>bridges</em> the cultural gap while preserving authentic personality.</p>
+              </div>
+              <div class="bg-green-50 p-6 rounded-xl">
+                <h4 class="font-serif text-lg font-semibold mb-3">Scale vs. Training Workshops</h4>
+                <p class="text-sm text-gray-700">Deploy to 10,000 agents in a day vs. $2,000-5,000 per person for cultural training that's forgotten in a month. AI-powered, always-on cultural communication enablement.</p>
+              </div>
+              <div class="bg-purple-50 p-6 rounded-xl">
+                <h4 class="font-serif text-lg font-semibold mb-3">Bidirectional Understanding</h4>
+                <p class="text-sm text-gray-700">Not just teaching APAC teams to "write Western"&mdash;analyzing Western client communication patterns to help teams understand <em>and adapt to</em> each specific client's style.</p>
+              </div>
+                <p class="text-sm text-gray-700">We learn your grammatical fingerprints. Competitors erase them. Our approach produces content that passes the "did I write this?" test.</p>
+              </div>
+            </div>
+            <div class="mt-12 text-center">
+              <div class="bg-primary text-white p-8 rounded-xl">
+                <h3 class="font-serif text-2xl font-bold mb-4">Core Positioning</h3>
+                <p class="text-xl text-blue-100">"Existing tools tell you <strong>what happened</strong>. ClearSignals AI tells you <strong>what's about to happen</strong>&mdash;and says it <strong>the way you would</strong>."</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Business Model -->
+      <section id="business-model" class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">Business Model &amp; Financials</h2>
+          <div class="max-w-4xl mx-auto">
+            <div class="mb-12">
+              <h3 class="font-serif text-2xl font-semibold mb-6">Tiered SaaS Pricing Structure</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b-2 border-primary">
+                      <th class="text-left py-4 px-6 font-semibold">Tier</th>
+                      <th class="text-right py-4 px-6 font-semibold">Monthly</th>
+                      <th class="text-right py-4 px-6 font-semibold">Annual</th>
+                      <th class="text-left py-4 px-6 font-semibold">Target Buyer</th>
+                      <th class="text-left py-4 px-6 font-semibold">Key Features</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-gray-200"><td class="py-4 px-6 font-semibold">Creator</td><td class="py-4 px-6 text-right">$19</td><td class="py-4 px-6 text-right">$228</td><td class="py-4 px-6">Freelancers, solopreneurs</td><td class="py-4 px-6 text-xs">Basic CPP, dual-version, grammar DNA</td></tr>
+                    <tr class="border-b border-gray-200"><td class="py-4 px-6 font-semibold">Professional</td><td class="py-4 px-6 text-right">$49</td><td class="py-4 px-6 text-right">$588</td><td class="py-4 px-6">Sales professionals</td><td class="py-4 px-6 text-xs">+ Enhanced CPP, multi-channel</td></tr>
+                    <tr class="border-b border-gray-200"><td class="py-4 px-6 font-semibold">Sales Team</td><td class="py-4 px-6 text-right">$99</td><td class="py-4 px-6 text-right">$1,188</td><td class="py-4 px-6">Sales teams</td><td class="py-4 px-6 text-xs">+ Sales CPP, voice agents, dashboard</td></tr>
+                    <tr><td class="py-4 px-6 font-semibold">Enterprise</td><td class="py-4 px-6 text-right">$149</td><td class="py-4 px-6 text-right">$1,788</td><td class="py-4 px-6">Global orgs</td><td class="py-4 px-6 text-xs">+ Cultural CPP, local LLM, live coaching</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+              <div>
+                <h3 class="font-serif text-2xl font-semibold mb-6">Revenue Expansion</h3>
+                <div class="space-y-4">
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-users text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">Seat Expansion</h4><p class="text-sm text-gray-600">Organic spread; 2-3x initial seats within 12 months</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-arrow-up text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">Tier Upgrades</h4><p class="text-sm text-gray-600">2.6-7.8x ARPU increase from entry to enterprise</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-microphone text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">Voice Agent Add-on</h4><p class="text-sm text-gray-600">Corporate voice agents as premium upsell</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-code text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">API Consumption</h4><p class="text-sm text-gray-600">Third-party integration; 10-20% of revenue at scale</p></div></div>
+                </div>
+              </div>
+              <div>
+                <h3 class="font-serif text-2xl font-semibold mb-6">Go-to-Market Strategy</h3>
+                <div class="space-y-4">
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-user-plus text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">Bottom-up Adoption</h4><p class="text-sm text-gray-600">Product-led growth; low CAC with viral mechanics</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-building text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">Top-down Expansion</h4><p class="text-sm text-gray-600">Sales Team &amp; Enterprise; VP Sales engagement</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"><i class="fas fa-handshake text-white text-sm"></i></div><div><h4 class="font-semibold mb-1">Channel Distribution</h4><p class="text-sm text-gray-600">1,000+ IT reseller relationships</p></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-blue-50 p-8 rounded-xl">
+              <h3 class="font-serif text-2xl font-semibold mb-4">Projected Financial Metrics (Illustrative)</h3>
+              <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center"><div class="text-3xl font-bold text-primary mb-2">Year 3</div><div class="text-sm text-gray-600 mb-4">Projected Timeline</div><div class="text-2xl font-bold text-green-600">$160.2M</div><div class="text-sm text-gray-600">Annual Recurring Revenue</div></div>
+                <div class="text-center"><div class="text-3xl font-bold text-primary mb-2">82%</div><div class="text-sm text-gray-600 mb-4">Gross Margin Target</div><div class="text-2xl font-bold text-blue-600">10mo</div><div class="text-sm text-gray-600">CAC Payback Period</div></div>
+                <div class="text-center"><div class="text-3xl font-bold text-primary mb-2">135%</div><div class="text-sm text-gray-600 mb-4">Net Revenue Retention</div><div class="text-2xl font-bold text-purple-600">150K</div><div class="text-sm text-gray-600">Active Users</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technology -->
+      <section id="technology" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">Technology Architecture</h2>
+          <div class="max-w-4xl mx-auto">
+            <div class="mb-12">
+              <h3 class="font-serif text-2xl font-semibold mb-6">Three-Layer Privacy-First Design</h3>
+              <div class="space-y-8">
+                <div class="flex items-start space-x-6">
+                  <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-desktop text-white text-xl"></i></div>
+                  <div class="flex-1">
+                    <h4 class="font-semibold text-lg mb-2">Local Processing Engine</h4>
+                    <p class="text-gray-700 mb-3">Runs entirely on user's machine. Connects to email via IMAP, ingests call transcripts from supported platforms, and processes text message exports. All raw communication analysis occurs locally.</p>
+                    <div class="text-sm text-gray-600">~10,000 messages/hour &bull; Complete isolation &bull; Multi-channel ingestion &bull; Local LLM option</div>
+                  </div>
+                </div>
+                <div class="flex items-start space-x-6">
+                  <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-cloud text-white text-xl"></i></div>
+                  <div class="flex-1">
+                    <h4 class="font-semibold text-lg mb-2">Anonymized Cloud Analysis &amp; Embedding</h4>
+                    <p class="text-gray-700 mb-3">Receives only processed outputs with all PII stripped. Irreversible transformation ensures privacy. LLM synthesis generates personality profiles, then converts them into vector embeddings for semantic storage. Supports local LLM inference for air-gapped environments.</p>
+                    <div class="text-sm text-gray-600">PII-stripped patterns &bull; LLM-powered synthesis &bull; Vector embedding generation &bull; On-premise option</div>
+                  </div>
+                </div>
+                <div class="flex items-start space-x-6">
+                  <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-server text-white text-xl"></i></div>
+                  <div class="flex-1">
+                    <h4 class="font-semibold text-lg mb-2">Vector Database &amp; RAG Engine</h4>
+                    <p class="text-gray-700 mb-3">CPPs are embedded as high-dimensional vectors in a semantic database alongside company knowledge (product specs, pricing, competitive intel, brand guidelines). Retrieval-Augmented Generation (RAG) grounds every piece of generated content in both the user's communication identity <em>and</em> verified company knowledge&mdash;eliminating hallucination and ensuring factual accuracy.</p>
+                    <div class="text-sm text-gray-600">Vector embeddings &bull; Semantic similarity search &bull; RAG-grounded generation &bull; Company knowledge base</div>
+                    <div class="mt-3 bg-purple-50 p-3 rounded-lg text-sm">
+                      <span class="font-semibold text-purple-800">Why vectors, not JSON:</span>
+                      <span class="text-gray-700"> Flat profiles can only be retrieved by ID. Embedded CPPs enable semantic search across patterns&mdash;finding trajectory matches, similar communication styles, and cross-customer insights at millisecond speed.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-primary text-white p-8 rounded-xl">
+              <h4 class="font-serif text-xl font-semibold mb-4">Compounding Intelligence Architecture</h4>
+              <p class="text-blue-100 mb-4">Every communication analyzed adds to the vector database. Every closed deal enriches trajectory patterns. Company knowledge embeddings ensure generated content is both <em>personality-accurate</em> and <em>factually grounded</em>. The system doesn't just store&mdash;it <strong>learns</strong>.</p>
+              <div class="flex flex-wrap items-center justify-center gap-4 text-center">
+                <div><div class="text-2xl font-bold">Weeks 1-4</div><div class="text-sm text-blue-200">CPP Embeddings + Company Knowledge Base</div></div>
+                <i class="fas fa-arrow-right text-xl text-blue-200 hidden md:block"></i>
+                <div><div class="text-2xl font-bold">Weeks 5-8</div><div class="text-sm text-blue-200">Cross-Channel Vector Correlation</div></div>
+                <i class="fas fa-arrow-right text-xl text-blue-200 hidden md:block"></i>
+                <div><div class="text-2xl font-bold">Weeks 9+</div><div class="text-sm text-blue-200">Predictive Trajectory Matching + Live Coaching</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Product Roadmap -->
+      <section id="roadmap" class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-4">Product Roadmap</h2>
+          <div class="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 p-4 rounded-xl mb-12 max-w-3xl mx-auto">
+            <p class="text-sm text-gray-700"><i class="fas fa-bolt text-purple-600 mr-2"></i><strong>AI-Accelerated Development:</strong> ClearSignals AI is built using AI-native development methodology&mdash;the same technology we're selling accelerates our own build cycle. Full platform delivery in <strong>16 weeks</strong>, not 16 months.</p>
+          </div>
+          <div class="max-w-3xl mx-auto">
+            <div class="space-y-0">
+              <div class="roadmap-line">
+                <div class="flex items-start space-x-6">
+                  <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 z-10 relative pulse-dot"><i class="fas fa-check text-white"></i></div>
+                  <div class="pb-10">
+                    <div class="flex items-center gap-3 mb-2"><h4 class="font-serif text-xl font-semibold">Phase 1: Foundation</h4><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">CURRENT</span></div>
+                    <p class="text-sm text-gray-600 mb-3">Weeks 1-4</p>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>&bull; Email-based Creator Personality Profile (Basic &amp; Enhanced CPP)</li>
+                      <li>&bull; Call transcript ingestion &amp; analysis</li>
+                      <li>&bull; Text message ingestion &amp; analysis</li>
+                      <li>&bull; Vector database architecture &amp; CPP embedding pipeline</li>
+                      <li>&bull; Company knowledge base with RAG-grounded generation</li>
+                      <li>&bull; Dual-version content generation</li>
+                      <li>&bull; Grammatical fingerprinting &amp; stylistic DNA</li>
+                      <li>&bull; Privacy-first local processing architecture</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="roadmap-line">
+                <div class="flex items-start space-x-6">
+                  <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 z-10 relative"><span class="text-white font-bold">2</span></div>
+                  <div class="pb-10">
+                    <h4 class="font-serif text-xl font-semibold mb-2">Phase 2: Intelligence</h4>
+                    <p class="text-sm text-gray-600 mb-3">Weeks 5-8</p>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>&bull; Sales CPP with CRM trajectory embedding &amp; deal prediction</li>
+                      <li>&bull; Corporate voice agents (CPP-driven personality)</li>
+                      <li>&bull; Cross-channel signal correlation engine</li>
+                      <li>&bull; Win/loss trajectory pattern library (vector similarity matching)</li>
+                      <li>&bull; CRM integration marketplace (Salesforce, HubSpot)</li>
+                      <li>&bull; Sales leadership dashboard</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="roadmap-line">
+                <div class="flex items-start space-x-6">
+                  <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 z-10 relative"><span class="text-white font-bold">3</span></div>
+                  <div class="pb-10">
+                    <h4 class="font-serif text-xl font-semibold mb-2">Phase 3: Live Intelligence</h4>
+                    <p class="text-sm text-gray-600 mb-3">Weeks 9-12</p>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>&bull; <strong>Live call analysis</strong>&mdash;real-time signal detection during active calls</li>
+                      <li>&bull; <strong>Live call coaching</strong>&mdash;in-ear guidance on formality, pacing, and cultural cues</li>
+                      <li>&bull; Cultural CPP for international business contexts</li>
+                      <li>&bull; Outcome-based pricing model (per signal actioned, per meeting generated)</li>
+                      <li>&bull; Local LLM deployment option for air-gapped enterprises</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-start space-x-6">
+                  <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0 z-10 relative"><span class="text-white font-bold">4</span></div>
+                  <div>
+                    <h4 class="font-serif text-xl font-semibold mb-2">Phase 4: Autonomous Agent</h4>
+                    <p class="text-sm text-gray-600 mb-3">Weeks 13-16</p>
+                    <ul class="space-y-1 text-sm text-gray-700">
+                      <li>&bull; Fully autonomous communication agents with scoped consent</li>
+                      <li>&bull; Multi-step workflow execution across enterprise systems</li>
+                      <li>&bull; APAC and European market expansion with data sovereignty options</li>
+                      <li>&bull; Enterprise success pattern marketplace</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Founding Team -->
+      <section id="team" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">Founding Team &amp; Leadership</h2>
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-white p-8 rounded-xl shadow-lg mb-12">
+              <div class="flex items-center mb-8">
+                <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center mr-6"><i class="fas fa-user text-white text-2xl"></i></div>
+                <div><h3 class="font-serif text-2xl font-bold text-primary">Steve Winfield</h3><p class="text-lg text-gray-600">Founder &amp; Managing Partner</p></div>
+              </div>
+              <p class="text-gray-700 mb-8 leading-relaxed">Steve Winfield brings a rare combination of enterprise sales leadership, technology channel expertise, cross-cultural experience, and educational methodology to ClearSignals AI. With 25+ years in enterprise technology&mdash;including 11 years at Microsoft where his team impacted over $50B in sales, with instrumental roles in channel launches of SharePoint, Windows Vista/7, and Office 365 across 142 countries&mdash;Steve has firsthand experience with the cross-cultural communication challenges the platform solves. <strong>Currently based in Vietnam</strong>, establishing ClearSignals AI's APAC operations at the epicenter of the region's fastest-growing IT market.</p>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-semibold text-lg mb-4">Professional Background</h4>
+                  <div class="space-y-3">
+                    <div class="flex items-start space-x-3"><i class="fas fa-building text-blue-500 mt-1"></i><div><div class="font-medium">Microsoft Corporation</div><div class="text-sm text-gray-600">11 years impacting $50B+ in sales; launched SharePoint, Vista/7, Office 365 channels across 142 countries</div></div></div>
+                    <div class="flex items-start space-x-3"><i class="fas fa-shield-alt text-green-500 mt-1"></i><div><div class="font-medium">Channel Leadership Roles</div><div class="text-sm text-gray-600">Cybereason, Kroll, Kaspersky, Trustifi &mdash; 108-166% quota attainment</div></div></div>
+                    <div class="flex items-start space-x-3"><i class="fas fa-network-wired text-purple-500 mt-1"></i><div><div class="font-medium">Reseller Network</div><div class="text-sm text-gray-600">~1,000 IT reseller contacts providing built-in distribution</div></div></div>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-lg mb-4">APAC Strategic Positioning</h4>
+                  <div class="space-y-3">
+                    <div class="flex items-start space-x-3"><i class="fas fa-map-marker-alt text-orange-500 mt-1"></i><div><div class="font-medium">Vietnam-Based Operations</div><div class="text-sm text-gray-600">On-ground in SE Asia's fastest-growing IT market since March 2025</div></div></div>
+                    <div class="flex items-start space-x-3"><i class="fas fa-globe text-green-500 mt-1"></i><div><div class="font-medium">41+ Country Experience</div><div class="text-sm text-gray-600">Deep cross-cultural fluency informing Cultural CPP&trade; development</div></div></div>
+                    <div class="flex items-start space-x-3"><i class="fas fa-graduation-cap text-blue-500 mt-1"></i><div><div class="font-medium">"Educator's Advantage"</div><div class="text-sm text-gray-600">Nearly a decade as teacher, coach, principal&mdash;communication training DNA</div></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-orange-50 p-8 rounded-xl border border-orange-200">
+              <h3 class="font-serif text-xl font-semibold mb-4 text-primary">Why This Founder for This Market</h3>
+              <p class="text-gray-700">US enterprise expertise + on-ground Vietnam presence + 41-country cross-cultural experience + educational methodology + 1,000 IT channel partners = <strong>uniquely positioned to build the cross-cultural communication intelligence platform that India and SE Asia need</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Market Timing -->
+      <section id="timing" class="py-16 bg-gray-50 fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">Why Now: India &amp; SE Asia Timing</h2>
+          <div class="max-w-4xl mx-auto">
+            <h3 class="font-serif text-2xl font-semibold mb-8">Five Converging APAC Trends</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+              <div class="space-y-6">
+                <div class="flex items-start space-x-4"><div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-globe-asia text-orange-600"></i></div><div><h4 class="font-semibold text-lg mb-2">India's AI Adoption Surge</h4><p class="text-gray-700 text-sm">India's enterprise AI market growing at <strong>35%+ CAGR</strong>. IT services companies actively seeking AI tools that solve client-facing communication challenges, not just internal efficiency.</p></div></div>
+                <div class="flex items-start space-x-4"><div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-building text-green-600"></i></div><div><h4 class="font-semibold text-lg mb-2">GCC Explosion</h4><p class="text-gray-700 text-sm"><strong>1,600+ Global Capability Centers</strong> in India, each with cross-cultural communication friction between local teams and headquarters. Growing 15% annually.</p></div></div>
+                <div class="flex items-start space-x-4"><div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-user-times text-red-600"></i></div><div><h4 class="font-semibold text-lg mb-2">BPO Retention Crisis</h4><p class="text-gray-700 text-sm"><strong>30-40% annual turnover</strong> in India/Philippines BPO. Companies desperate for tools that capture and transfer cultural communication intelligence from departing agents.</p></div></div>
+              </div>
+              <div class="space-y-6">
+                <div class="flex items-start space-x-4"><div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-shield-alt text-blue-600"></i></div><div><h4 class="font-semibold text-lg mb-2">India DPDP Act &amp; Data Sovereignty</h4><p class="text-gray-700 text-sm">India's Digital Personal Data Protection Act (2023) and growing data sovereignty requirements across ASEAN make <strong>local-first processing a regulatory advantage</strong>, not just a feature.</p></div></div>
+                <div class="flex items-start space-x-4"><div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-rocket text-purple-600"></i></div><div><h4 class="font-semibold text-lg mb-2">Vietnam as the Next IT Hub</h4><p class="text-gray-700 text-sm">Vietnam's IT outsourcing sector growing at <strong>25%+ annually</strong>&mdash;the fastest in SE Asia. Our on-ground presence positions us at the epicenter of the next wave.</p></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Investment Summary -->
+      <section id="investment" class="py-16 bg-white fade-in">
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+          <h2 class="font-serif text-4xl font-bold text-primary mb-12">Investment Summary</h2>
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-primary text-white p-8 rounded-xl mb-12">
+              <h3 class="font-serif text-2xl font-bold mb-4">Investment Thesis: APAC-First Strategy</h3>
+              <p class="text-blue-100 text-lg leading-relaxed">ClearSignals AI captures the <strong>largest unaddressed market in enterprise AI</strong>: cross-cultural communication intelligence. India's $245B IT services industry and SE Asia's $40B BPO sector serve Western clients across cultural boundaries with <strong>zero AI tools purpose-built to bridge the gap</strong>. Our Cultural CPP&trade; technology, privacy-first architecture, and on-ground SE Asia presence create a <strong>defensible first-mover advantage in a market with 6M+ potential users</strong>.</p>
+            </div>
+            <div class="mb-12">
+              <h3 class="font-serif text-2xl font-semibold mb-6">Key Investment Highlights</h3>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                  <div class="flex items-start space-x-4"><div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-globe-asia text-white"></i></div><div><h4 class="font-semibold mb-1">Massive Unserved Market</h4><p class="text-sm text-gray-600">$285B+ India/SE Asia IT services and BPO market with zero cross-cultural communication AI solutions</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-shield-alt text-white"></i></div><div><h4 class="font-semibold mb-1">IP &amp; Technology Moat</h4><p class="text-sm text-gray-600">5 patent-pending processes, 6 trademark-protected brands, privacy-first architecture aligned with India DPDP Act</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-users text-white"></i></div><div><h4 class="font-semibold mb-1">Enterprise Scale</h4><p class="text-sm text-gray-600">5,000-50,000 seat enterprise deals; IT services companies deploy across entire delivery organizations</p></div></div>
+                </div>
+                <div class="space-y-6">
+                  <div class="flex items-start space-x-4"><div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-database text-white"></i></div><div><h4 class="font-semibold mb-1">Cross-Cultural Data Flywheel</h4><p class="text-sm text-gray-600">Every cross-cultural interaction enriches the pattern library. More India-US, PH-UK, Vietnam-EU communication data = better cultural bridging for every customer</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-10 h-10 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-map-marker-alt text-white"></i></div><div><h4 class="font-semibold mb-1">On-Ground APAC Presence</h4><p class="text-sm text-gray-600">Founding team in Vietnam with direct access to India, Philippines, Singapore corridors + 25 years US enterprise experience</p></div></div>
+                  <div class="flex items-start space-x-4"><div class="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-clock text-white"></i></div><div><h4 class="font-semibold mb-1">APAC Timing</h4><p class="text-sm text-gray-600">India DPDP Act, GCC explosion, BPO retention crisis, and AI adoption surge creating optimal entry window</p></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-green-50 p-8 rounded-xl mb-12 border border-green-200">
+              <h3 class="font-serif text-xl font-semibold mb-6 text-primary"><i class="fas fa-file-contract mr-2"></i>Intellectual Property Portfolio</h3>
+              <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 class="font-semibold text-sm mb-3 text-gray-800">Patent-Pending Processes</h4>
+                  <div class="space-y-2 text-sm text-gray-700">
+                    <div class="flex items-start space-x-2"><i class="fas fa-gavel text-green-600 mt-0.5 text-xs"></i><span>Local-to-cloud privacy architecture with irreversible PII transformation</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-gavel text-green-600 mt-0.5 text-xs"></i><span>CRM-to-communication trajectory correlation and predictive outcome scoring</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-gavel text-green-600 mt-0.5 text-xs"></i><span>Stylistic pattern replication from unfiltered multi-channel communication analysis</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-gavel text-green-600 mt-0.5 text-xs"></i><span>Profile-divergent dual content generation from single communication identity</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-gavel text-green-600 mt-0.5 text-xs"></i><span>Semantic vector embedding of communication personality profiles with RAG-grounded generation</span></div>
+                  </div>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-sm mb-3 text-gray-800">Trademark-Protected Brands</h4>
+                  <div class="space-y-2 text-sm text-gray-700">
+                    <div class="flex items-start space-x-2"><i class="fas fa-trademark text-green-600 mt-0.5 text-xs"></i><span>ClearSignals AI&trade;</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-trademark text-green-600 mt-0.5 text-xs"></i><span>Creator Personality Profile&trade; (CPP&trade;)</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-trademark text-green-600 mt-0.5 text-xs"></i><span>Grammatical Fingerprinting&trade;</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-trademark text-green-600 mt-0.5 text-xs"></i><span>Communication Trajectory Mapping&trade;</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-trademark text-green-600 mt-0.5 text-xs"></i><span>Dual-Version Content Creation&trade;</span></div>
+                    <div class="flex items-start space-x-2"><i class="fas fa-trademark text-green-600 mt-0.5 text-xs"></i><span>Formality Spectrum&trade;</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="bg-blue-50 p-8 rounded-xl mb-12">
+              <h3 class="font-serif text-xl font-semibold mb-6 text-primary">Funding Use of Proceeds (Illustrative)</h3>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between"><div class="flex items-center space-x-3"><div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"><span class="text-white text-xs font-bold">40%</span></div><span class="font-medium">Product &amp; Engineering</span></div><span class="text-sm text-gray-600">Platform, live call intelligence, security</span></div>
+                <div class="flex items-center justify-between"><div class="flex items-center space-x-3"><div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center"><span class="text-white text-xs font-bold">30%</span></div><span class="font-medium">Sales &amp; Marketing</span></div><span class="text-sm text-gray-600">GTM execution, brand, demand gen</span></div>
+                <div class="flex items-center justify-between"><div class="flex items-center space-x-3"><div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center"><span class="text-white text-xs font-bold">20%</span></div><span class="font-medium">Partnerships &amp; Integrations</span></div><span class="text-sm text-gray-600">CRM marketplace, voice agent ecosystem</span></div>
+                <div class="flex items-center justify-between"><div class="flex items-center space-x-3"><div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center"><span class="text-white text-xs font-bold">10%</span></div><span class="font-medium">Operations</span></div><span class="text-sm text-gray-600">Legal, finance, customer success</span></div>
+              </div>
+            </div>
+            <div class="text-center">
+              <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="font-serif text-2xl font-bold text-primary mb-4">ClearSignals AI</h3>
+                <p class="text-gray-600 mb-4">www.ClearSignalsAI.com</p>
+                <p class="text-lg font-medium text-gray-700 italic mb-6">"The world's best technical talent shouldn't lose deals because of cultural communication friction. We fix that."</p>
+                <div class="space-y-2">
+                  <p class="font-semibold">Steve Winfield</p>
+                  <p class="text-sm text-gray-600">Founder &amp; Managing Partner</p>
+                  <p class="text-sm text-gray-600">WinTech Partners</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+        const tocToggle = document.getElementById('toc-toggle');
+        const toc = document.getElementById('toc');
+        const tocBackdrop = document.getElementById('toc-backdrop');
+        function toggleToc() {
+            const isOpen = !toc.classList.contains('-translate-x-full');
+            toc.classList.toggle('-translate-x-full');
+            tocBackdrop.classList.toggle('hidden', isOpen);
+        }
+        tocToggle.addEventListener('click', toggleToc);
+        tocBackdrop.addEventListener('click', toggleToc);
+        document.querySelectorAll('#toc a').forEach(link => {
+            link.addEventListener('click', () => { if (window.innerWidth < 1024) toggleToc(); });
+        });
+        document.querySelectorAll('#toc a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('#toc a[href^="#"]');
+        function highlightActiveSection() {
+            let current = '';
+            sections.forEach(section => { if (window.pageYOffset >= section.offsetTop - 200) current = section.getAttribute('id'); });
+            tocLinks.forEach(link => {
+                link.classList.remove('bg-blue-100', 'text-blue-800', 'font-medium');
+                if (link.getAttribute('href') === '#' + current) link.classList.add('bg-blue-100', 'text-blue-800', 'font-medium');
+            });
+        }
+        window.addEventListener('scroll', highlightActiveSection);
+        highlightActiveSection();
+        const fadeElements = document.querySelectorAll('.fade-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        fadeElements.forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

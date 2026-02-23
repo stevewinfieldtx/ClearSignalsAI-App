@@ -1,0 +1,13 @@
+{
+  "name": "clearsignals-ai",
+  "version": "0.8.0",
+  "description": "ClearSignals AI - Email Thread Intelligence",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
