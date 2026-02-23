@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── STAGE 1 PROMPT: Cheap/fast preprocessor ──────────────────────────
+// == STAGE 1 PROMPT: Cheap/fast preprocessor ==
 const STAGE1_PROMPT = `You are an email thread preprocessor. Your ONLY job is to parse a raw pasted email into clean individual messages.
 
 PARSE the email thread by finding patterns like "On [date], [person] wrote:", "From:", "Sent:", reply quote markers (> or |), separator lines (----, ____).
@@ -14,7 +14,7 @@ PARSE the email thread by finding patterns like "On [date], [person] wrote:", "F
 For EACH message, extract:
 - from: sender name
 - date: date/time if found
-- direction: "inbound" or "outbound" (guess based on context — who is selling vs buying)
+- direction: "inbound" or "outbound" (guess based on context - who is selling vs buying)
 - body: the ACTUAL message body only
 
 STRIP from each body:
@@ -36,16 +36,16 @@ Return ONLY this JSON:
   ]
 }
 
-Return ONLY valid JSON. No markdown fences.`;
+Return ONLY valid JSON. No markdown fences. No explanation.`;
 
-// ── STAGE 2 PROMPT: Deep analysis on clean data ──────────────────────
+// == STAGE 2 PROMPT: Deep analysis on clean data ==
 const STAGE2_PROMPT = `You are ClearSignals AI, an elite sales intelligence engine. You receive a PRE-PARSED email thread with clean message bodies. Analyze every single email.
 
 For EACH email provide:
 - What the sender is REALLY saying (intent behind the words)
 - Running intent score and win probability at that point in the thread
 - Signals detected in THIS specific email
-- Coaching: For outbound (rep) emails — what they did well / could improve. For inbound (prospect) emails — what the rep should notice / risk they might miss.
+- Coaching: For outbound (rep) emails - what they did well / could improve. For inbound (prospect) emails - what the rep should notice / risk they might miss.
 - next_time: If this is a pivotal moment where the rep could have changed the outcome, say what they should have done differently. null if not pivotal.
 
 Return ONLY this JSON:
@@ -76,7 +76,7 @@ Return ONLY this JSON:
 RULES:
 - per_email: ONE entry per email. Do NOT skip any. You will receive N emails, return N per_email entries.
 - intent (1-10): 1=no interest, 3=aware, 5=evaluating, 7=shortlisted, 9=verbal commit, 10=signed
-- win_pct (0-100): Must change meaningfully between emails — tell the STORY of the deal
+- win_pct (0-100): Must change meaningfully between emails - tell the STORY of the deal
 - signals: At least one per email. Types: intent, cultural, competitive, formality, drift
 - coaching: On EVERY email. Outbound: good/better for rep. Inbound: what rep should notice/risk.
 - summary: Explain what the person REALLY means, don't just restate.
@@ -84,9 +84,61 @@ RULES:
 
 CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationship-first), Germany(Sie/du), Brazil/Mexico(casual=default, formality=warning), UK("not bad"=praise, "interesting"=dismissal), China(face-saving), Korea(hierarchy), Sweden(lagom), India("yes but"=no)
 
-Return ONLY valid JSON. No markdown fences.`;
+Return ONLY valid JSON. No markdown fences. No explanation.`;
 
-// ── Available models ─────────────────────────────────────────────────
+// == SINGLE-CALL FALLBACK PROMPT (if stage 1 fails) ==
+const FALLBACK_PROMPT = `You are ClearSignals AI. The user pasted a raw email with a quoted thread history at the bottom (like a forwarded email).
+
+STEP 1: Parse the email into individual messages. Identify each message by looking for patterns like "On [date], [person] wrote:", "From:", "Sent:", reply quote markers (> or |), or separator lines (----, ____). Extract: sender, date (if visible), and body for each message. Order them OLDEST first (bottom of thread = earliest).
+
+STEP 2: Analyze the full thread and return this JSON:
+
+{
+  "contact_name": "primary prospect name",
+  "company_name": "prospect company",
+  "rep_name": "primary sales rep or team",
+  "parsed_emails": [
+    {"index":1,"from":"sender","date":"date if found","snippet":"first 80 chars","direction":"inbound|outbound"}
+  ],
+  "per_email": [
+    {
+      "email_num":1,
+      "intent":2,
+      "win_pct":10,
+      "signals":[{"type":"intent|cultural|competitive|formality|drift","desc":"what this signal means","severity":"red|yellow|green","quote":"exact short quote"}],
+      "summary":"What is this person really saying? What does this email mean for the deal?",
+      "coaching":{"good":"what rep did well or should notice","better":"what rep could improve or risk they might miss"},
+      "next_time":"If pivotal: what should rep have done differently here? null if not pivotal."
+    }
+  ],
+  "final": {
+    "signals":[{"type":"type","desc":"description","severity":"red|yellow|green","quote":"quote"}],
+    "ryg":{"r":0,"y":0,"g":0},
+    "intent":5,
+    "win_pct":50,
+    "coach":"specific actionable coaching summary",
+    "summary":"2-3 sentences on deal status",
+    "next_steps":"what should the rep do RIGHT NOW",
+    "deal_stage":"prospecting|qualification|demo|proposal|negotiation|closed_won|closed_lost|no_decision"
+  }
+}
+
+RULES:
+- parsed_emails: ONE entry per email found. Count carefully. Do not skip any.
+- per_email: ONE entry per email with progressive intent and win_pct that tell the STORY.
+- signals: At least one per email.
+- coaching: On EVERY email.
+- next_time: Only on pivotal moments. null otherwise.
+
+METRICS:
+- INTENT (1-10): 1=no interest, 3=aware, 5=evaluating, 7=shortlisted, 9=verbal commit, 10=signed
+- WIN% (0-100): Must move meaningfully between emails
+
+CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationship-first), Germany(Sie/du), Brazil/Mexico(casual=default, formality=warning), UK("not bad"=praise, "interesting"=dismissal), China(face-saving), Korea(hierarchy), Sweden(lagom), India("yes but"=no)
+
+Return ONLY valid JSON. No markdown fences. No explanation.`;
+
+// == Available models ==
 const MODELS = {
   'haiku': 'anthropic/claude-3.5-haiku',
   'sonnet': 'anthropic/claude-sonnet-4',
@@ -95,7 +147,7 @@ const MODELS = {
   'pro': 'google/gemini-2.5-pro'
 };
 
-// ── OpenRouter API call helper ───────────────────────────────────────
+// == OpenRouter API call helper ==
 async function callLLM(modelId, systemPrompt, userMessage, maxTokens) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -127,81 +179,139 @@ async function callLLM(modelId, systemPrompt, userMessage, maxTokens) {
   return { raw, parsed: cleanJSON(raw) };
 }
 
-// ── Analyze endpoint — two-stage pipeline ────────────────────────────
-app.post('/api/analyze', async (req, res) => {
-  const { text, model } = req.body;
-  const apiKey = process.env.OPENROUTER_API_KEY;
+// == JSON cleaner (aggressive) ==
+function cleanJSON(raw) {
+  var s = (raw || '');
+  // Strip markdown fences
+  s = s.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+  // Find outermost braces
+  var f = s.indexOf('{');
+  var l = s.lastIndexOf('}');
+  if (f < 0 || l < 0) throw new Error('No JSON object found in response');
+  s = s.slice(f, l + 1);
+
+  // Try 1: raw
+  try { return JSON.parse(s); } catch(e) {}
+
+  // Try 2: trailing commas
+  var fix = s.replace(/,\s*([}\]])/g, '$1');
+  try { return JSON.parse(fix); } catch(e) {}
+
+  // Try 3: control chars in strings
+  fix = fix.replace(/[\x00-\x1f]/g, function(c) {
+    if (c === '\n') return '\\n';
+    if (c === '\r') return '\\r';
+    if (c === '\t') return '\\t';
+    return '';
+  });
+  try { return JSON.parse(fix); } catch(e) {}
+
+  // Try 4: balanced brace extraction from original
+  var depth = 0, start = -1, end = -1;
+  for (var i = 0; i < raw.length; i++) {
+    if (raw[i] === '{') { if (depth === 0) start = i; depth++; }
+    if (raw[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+  }
+  if (start >= 0 && end > start) {
+    var ex = raw.slice(start, end + 1);
+    ex = ex.replace(/,\s*([}\]])/g, '$1');
+    ex = ex.replace(/[\x00-\x1f]/g, function(c) {
+      if (c === '\n') return '\\n'; if (c === '\r') return '\\r'; if (c === '\t') return '\\t'; return '';
+    });
+    try { return JSON.parse(ex); } catch(e) {}
+  }
+
+  throw new Error('JSON parse failed. First 300: ' + s.slice(0, 300));
+}
+
+// == Analyze endpoint - two-stage with fallback ==
+app.post('/api/analyze', async function(req, res) {
+  var text = req.body.text;
+  var model = req.body.model;
+  var apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) return res.status(500).json({ error: 'Server missing OPENROUTER_API_KEY' });
   if (!text || !text.trim()) return res.status(400).json({ error: 'No email text provided' });
 
-  const analysisModel = MODELS[model] || MODELS['sonnet'];
-  const preprocessModel = MODELS['flash-lite']; // Always cheap/fast for stage 1
+  var analysisModel = MODELS[model] || MODELS['sonnet'];
+  var preprocessModel = MODELS['flash-lite'];
 
   try {
-    // ── STAGE 1: Preprocess with cheap model ─────────────────────────
-    const t1 = Date.now();
-    const stage1 = await callLLM(preprocessModel, STAGE1_PROMPT, text, 8000);
-    const s1 = stage1.parsed;
-    const t1ms = Date.now() - t1;
+    // == TRY TWO-STAGE PIPELINE ==
+    var t1 = Date.now();
+    var s1, t1ms, emailCount;
 
-    const emailCount = (s1.emails || []).length;
-    console.log(`[STAGE 1] ${preprocessModel} | ${emailCount} emails parsed | ${t1ms}ms | ${stage1.raw.length} chars`);
-
-    if (!emailCount) {
-      return res.status(400).json({ error: 'Stage 1 failed to parse any emails from the thread' });
+    try {
+      var stage1 = await callLLM(preprocessModel, STAGE1_PROMPT, text, 8000);
+      s1 = stage1.parsed;
+      t1ms = Date.now() - t1;
+      emailCount = (s1.emails || []).length;
+      console.log('[STAGE 1] ' + preprocessModel + ' | ' + emailCount + ' emails | ' + t1ms + 'ms');
+    } catch (s1err) {
+      console.log('[STAGE 1 FAILED] ' + s1err.message + ' - falling back to single call');
+      s1 = null;
     }
 
-    // Build clean input for stage 2
-    const cleanThread = (s1.emails || []).map(function(em) {
-      return 'EMAIL ' + em.index + ' of ' + emailCount + ':\n' +
-        'Direction: ' + em.direction + ' | From: ' + em.from + ' | Date: ' + (em.date || 'unknown') + '\n' +
-        em.body;
-    }).join('\n\n---\n\n');
+    if (s1 && emailCount > 0) {
+      // Stage 1 succeeded - do two-stage
+      var cleanThread = (s1.emails || []).map(function(em) {
+        return 'EMAIL ' + em.index + ' of ' + emailCount + ':\n' +
+          'Direction: ' + em.direction + ' | From: ' + em.from + ' | Date: ' + (em.date || 'unknown') + '\n' +
+          em.body;
+      }).join('\n\n---\n\n');
 
-    // ── STAGE 2: Deep analysis with smart model ──────────────────────
-    const t2 = Date.now();
-    const stage2 = await callLLM(analysisModel, STAGE2_PROMPT,
-      'Analyze this ' + emailCount + '-email thread. Return exactly ' + emailCount + ' per_email entries:\n\n' + cleanThread,
-      16000);
-    const s2 = stage2.parsed;
-    const t2ms = Date.now() - t2;
+      var t2 = Date.now();
+      var stage2 = await callLLM(analysisModel, STAGE2_PROMPT,
+        'Analyze this ' + emailCount + '-email thread. Return exactly ' + emailCount + ' per_email entries:\n\n' + cleanThread,
+        16000);
+      var s2 = stage2.parsed;
+      var t2ms = Date.now() - t2;
+      var perCount = (s2.per_email || []).length;
+      console.log('[STAGE 2] ' + analysisModel + ' | ' + perCount + ' analyses | ' + t2ms + 'ms');
 
-    const perCount = (s2.per_email || []).length;
-    console.log(`[STAGE 2] ${analysisModel} | ${perCount} per_email entries | ${t2ms}ms | ${stage2.raw.length} chars`);
+      var result = {
+        contact_name: s1.contact_name || '',
+        company_name: s1.company_name || '',
+        rep_name: s1.rep_name || '',
+        parsed_emails: (s1.emails || []).map(function(em) {
+          return { index: em.index, from: em.from, date: em.date, snippet: (em.body || '').substring(0, 80), direction: em.direction };
+        }),
+        per_email: s2.per_email || [],
+        final: s2.final || {}
+      };
 
-    if (emailCount !== perCount) {
-      console.log(`[WARNING] Mismatch! ${emailCount} emails but ${perCount} analyses`);
+      return res.json({
+        result: result,
+        model: analysisModel,
+        preprocess_model: preprocessModel,
+        pipeline: 'two-stage',
+        stage1_ms: t1ms,
+        stage2_ms: t2ms,
+        total_ms: t1ms + t2ms,
+        email_count: emailCount,
+        analysis_count: perCount,
+        complete: emailCount === perCount
+      });
     }
 
-    // ── Merge stage 1 + stage 2 into final response ──────────────────
-    const result = {
-      contact_name: s1.contact_name || '',
-      company_name: s1.company_name || '',
-      rep_name: s1.rep_name || '',
-      parsed_emails: (s1.emails || []).map(function(em) {
-        return {
-          index: em.index,
-          from: em.from,
-          date: em.date,
-          snippet: (em.body || '').substring(0, 80),
-          direction: em.direction
-        };
-      }),
-      per_email: s2.per_email || [],
-      final: s2.final || {}
-    };
+    // == FALLBACK: Single call (like v0.9) ==
+    console.log('[FALLBACK] Using single-call with ' + analysisModel);
+    var tf = Date.now();
+    var fallback = await callLLM(analysisModel, FALLBACK_PROMPT, 'Analyze this pasted email thread:\n\n' + text, 16000);
+    var fb = fallback.parsed;
+    var tfms = Date.now() - tf;
+    var fbEmailCount = (fb.parsed_emails || []).length;
+    var fbPerCount = (fb.per_email || []).length;
+    console.log('[FALLBACK] ' + analysisModel + ' | ' + fbEmailCount + ' emails, ' + fbPerCount + ' analyses | ' + tfms + 'ms');
 
-    res.json({
-      result: result,
+    return res.json({
+      result: fb,
       model: analysisModel,
-      preprocess_model: preprocessModel,
-      stage1_ms: t1ms,
-      stage2_ms: t2ms,
-      total_ms: t1ms + t2ms,
-      email_count: emailCount,
-      analysis_count: perCount,
-      complete: emailCount === perCount
+      pipeline: 'fallback-single',
+      total_ms: tfms,
+      email_count: fbEmailCount,
+      analysis_count: fbPerCount,
+      complete: fbEmailCount === fbPerCount
     });
 
   } catch (err) {
@@ -210,27 +320,9 @@ app.post('/api/analyze', async (req, res) => {
   }
 });
 
-// ── JSON cleaner ─────────────────────────────────────────────────────
-function cleanJSON(raw) {
-  let s = (raw || '').replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
-  const f = s.indexOf('{');
-  const l = s.lastIndexOf('}');
-  if (f < 0 || l < 0) throw new Error('No JSON in response');
-  s = s.slice(f, l + 1);
-  try { return JSON.parse(s); } catch(e) {
-    let fix = s.replace(/,\s*([}\]])/g, '$1');
-    try { return JSON.parse(fix); } catch(e2) {
-      fix = fix.replace(/(?<=":[ ]*"[^"]*)\n/g, '\\n');
-      try { return JSON.parse(fix); } catch(e3) {
-        throw new Error('JSON parse failed');
-      }
-    }
-  }
-}
-
-// ── Health check ─────────────────────────────────────────────────────
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '1.0.0', hasKey: !!process.env.OPENROUTER_API_KEY });
+// == Health check ==
+app.get('/api/health', function(req, res) {
+  res.json({ status: 'ok', version: '1.0.1', hasKey: !!process.env.OPENROUTER_API_KEY });
 });
 
-app.listen(PORT, () => console.log('ClearSignals AI v1.0.0 on port ' + PORT));
+app.listen(PORT, function() { console.log('ClearSignals AI v1.0.1 on port ' + PORT); });
