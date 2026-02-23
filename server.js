@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── System Prompt — EXACT v3 prompt that worked ─────────────────────
+// ── System Prompt v0.9 — Back to v1 spirit, clean and direct ─────────
 const SYS_PROMPT = `You are ClearSignals AI. The user pasted a raw email with a quoted thread history at the bottom (like a forwarded email).
 
 STEP 1: Parse the email into individual messages. Identify each message by looking for patterns like "On [date], [person] wrote:", "From:", "Sent:", reply quote markers (> or |), or separator lines (----, ____). Extract: sender, date (if visible), and body for each message. Order them OLDEST first (bottom of thread = earliest).
@@ -14,57 +14,54 @@ STEP 1: Parse the email into individual messages. Identify each message by looki
 STEP 2: Analyze the full thread and return this JSON:
 
 {
+  "contact_name": "primary prospect name",
+  "company_name": "prospect company",
+  "rep_name": "primary sales rep or team",
   "parsed_emails": [
     {"index":1,"from":"sender","date":"date if found","snippet":"first 80 chars","direction":"inbound|outbound"}
   ],
   "per_email": [
-    {"email_num":1,"intent":0,"win_pct":0,"signals":[{"type":"type","desc":"desc","severity":"sev","quote":"q"}],"summary":"one sentence","coaching":{"good":"what rep did well or null","better":"what rep could improve or null"}}
+    {
+      "email_num":1,
+      "intent":2,
+      "win_pct":10,
+      "signals":[{"type":"intent|cultural|competitive|formality|drift","desc":"what this signal means","severity":"red|yellow|green","quote":"exact short quote"}],
+      "summary":"What is this person really saying? What does this email mean for the deal?",
+      "coaching":{"good":"what rep did well or should notice","better":"what rep could improve or risk they might miss"},
+      "next_time":"If pivotal: what should rep have done differently here? null if not pivotal."
+    }
   ],
   "final": {
     "signals":[{"type":"type","desc":"description","severity":"red|yellow|green","quote":"quote"}],
     "ryg":{"r":0,"y":0,"g":0},
     "intent":5,
     "win_pct":50,
-    "coach":"specific actionable advice for the rep right now",
-    "summary":"2-3 sentences on where this deal stands",
-    "next_steps":"what should the rep do next based on the signals",
-    "deal_stage":"prospecting|qualification|demo|proposal|negotiation|closed_won|closed_lost|no_decision",
-    "next_time":[
-      {"at_email":3,"suggestion":"What the rep could have done differently at this specific point","why":"Why this would have mattered"}
-    ]
+    "coach":"specific actionable coaching summary",
+    "summary":"2-3 sentences on deal status",
+    "next_steps":"what should the rep do RIGHT NOW",
+    "deal_stage":"prospecting|qualification|demo|proposal|negotiation|closed_won|closed_lost|no_decision"
   }
 }
 
-CRITICAL RULES:
-- parsed_emails: Extract EVERY message. You MUST return one entry per email found. Do NOT skip any.
-- per_email: You MUST return one entry for EVERY email. Each gets intent, win_pct (progressive/running scores), signals, and a summary sentence. Do NOT skip any emails.
-- per_email signals: Find at least one signal per email. Types: intent, cultural, competitive, formality, drift. Every email has something worth noting.
-- per_email coaching: For OUTBOUND emails (from the rep/seller), ALWAYS include coaching with "good" and/or "better". For inbound, coaching can be null.
-- final signals: Comprehensive list of ALL significant signals across the thread.
-- final ryg: Total counts across entire thread.
-- next_time: 1-3 specific moments where the rep could have taken a different action for a better outcome. Reference the email number. If the rep handled everything well, return a single entry with suggestion "Well played" and why explaining what they did right. Be specific and actionable — not generic advice.
-- direction: If you can identify which messages are from the sales rep vs the contact, mark direction. If unclear, make your best guess based on context.
+RULES:
+- parsed_emails: ONE entry per email found. Count carefully. Do not skip any.
+- per_email: ONE entry per email. Each gets progressive intent (1-10) and win_pct (0-100) that tell the STORY of the deal — rising, falling, shifting.
+- per_email signals: At least one per email. Types: intent, cultural, competitive, formality, drift.
+- per_email coaching: For EVERY email. Outbound: what rep did well / could improve. Inbound: what rep should notice / risk they might miss.
+- per_email next_time: Only on pivotal emails where the rep could have changed the outcome. null otherwise.
+- per_email summary: Explain what the person is REALLY saying, not just restate the email.
+- final: Overall assessment after reading everything.
+- If you can identify who is the rep vs prospect, mark direction. If unclear, best guess.
+
+IMPORTANT: If the thread is long, prioritize completeness. Return ALL emails even if analysis must be briefer per email. Do NOT truncate the last emails — the deal outcome matters most.
 
 METRICS:
-1. BUYER INTENT (1-10): 1=no interest, 3=aware, 5=evaluating, 7=shortlisted, 9=verbal commit, 10=signed
-2. WIN LIKELIHOOD (0-100%): Probability this deal closes. Must change meaningfully between emails.
-3. CULTURAL ALIGNMENT (RYG cumulative):
-   - RED: Cultural violations, competitive threats, trust damage
-   - YELLOW: Caution signals, ambiguous indicators
-   - GREEN: Trust builders, positive cultural signals
+- INTENT (1-10): 1=no interest, 3=aware, 5=evaluating, 7=shortlisted, 9=verbal commit, 10=signed
+- WIN% (0-100): Must move meaningfully between emails
 
-CULTURAL RULES:
-- Japan: silence=contemplation, "we will consider"=no, formal=neutral, rushing=violation
-- Vietnam: relationship-first, warmth withdrawal=major warning
-- Germany: Sie/du=trust milestone, du to Sie=trust BROKEN
-- Brazil/Mexico: casual=DEFAULT, formality increase=WARNING
-- UK: "not bad"=praise, "interesting" alone=dismissal
-- China: face-saving paramount, direct blame=catastrophic
-- Korea: hierarchy/consensus required
-- Sweden: lagom, hard sell=disengage
-- India: "yes but perhaps"=indirect no
+CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationship-first), Germany(Sie/du), Brazil/Mexico(casual=default, formality=warning), UK("not bad"=praise, "interesting"=dismissal), China(face-saving), Korea(hierarchy), Sweden(lagom), India("yes but"=no)
 
-Return ONLY valid JSON. No markdown fences. No explanation outside JSON.`;
+Return ONLY valid JSON. No markdown fences. No explanation.`;
 
 // ── Available models ─────────────────────────────────────────────────
 const MODELS = {
@@ -96,7 +93,7 @@ app.post('/api/analyze', async (req, res) => {
       },
       body: JSON.stringify({
         model: modelId,
-        max_tokens: 8000,
+        max_tokens: 16000,
         messages: [
           { role: 'system', content: SYS_PROMPT },
           { role: 'user', content: 'Analyze this pasted email thread:\n\n' + text }
@@ -115,7 +112,13 @@ app.post('/api/analyze', async (req, res) => {
     if (!raw) return res.status(502).json({ error: 'Empty response from model' });
 
     const parsed = cleanJSON(raw);
-    res.json({ result: parsed, model: modelId, raw_length: raw.length });
+
+    // Validate: warn if per_email count doesn't match parsed_emails
+    const emailCount = (parsed.parsed_emails || []).length;
+    const perCount = (parsed.per_email || []).length;
+    const complete = emailCount === perCount;
+
+    res.json({ result: parsed, model: modelId, raw_length: raw.length, email_count: emailCount, analysis_count: perCount, complete });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -142,7 +145,7 @@ function cleanJSON(raw) {
 
 // ── Health check ─────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '0.8.1', hasKey: !!process.env.OPENROUTER_API_KEY });
+  res.json({ status: 'ok', version: '0.9.0', hasKey: !!process.env.OPENROUTER_API_KEY });
 });
 
-app.listen(PORT, () => console.log('ClearSignals AI v0.8.1 on port ' + PORT));
+app.listen(PORT, () => console.log('ClearSignals AI v0.9.0 on port ' + PORT));
