@@ -3,6 +3,18 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// == Pinecone vector memory ==
+const pinecone = require('./pinecone');
+
+// Init Pinecone indexes on startup (non-blocking)
+if (process.env.PINECONE_API_KEY) {
+  pinecone.initIndexes()
+    .then(() => console.log('[Pinecone] Indexes ready'))
+    .catch(e => console.error('[Pinecone] Init error:', e.message));
+} else {
+  console.log('[Pinecone] PINECONE_API_KEY not set — vector memory disabled');
+}
+
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -280,7 +292,18 @@ app.post('/api/analyze', async function(req, res) {
         final: s2.final || {}
       };
 
-      return res.json({
+      // == Store in Pinecone + find similar deals ==
+      var memoryResult = { stored: false, similar: null };
+      if (process.env.PINECONE_API_KEY && result.final && result.final.deal_stage) {
+        var threadId = 'thread_' + Date.now();
+        var [storeRes, similarRes] = await Promise.all([
+          pinecone.storeDeal(threadId, result, text),
+          pinecone.findSimilarDeals(result, 5)
+        ]);
+        memoryResult = { stored: storeRes.success, thread_id: threadId, similar: similarRes };
+      }
+
+        return res.json({
         result: result,
         model: analysisModel,
         preprocess_model: preprocessModel,
@@ -290,7 +313,8 @@ app.post('/api/analyze', async function(req, res) {
         total_ms: t1ms + t2ms,
         email_count: emailCount,
         analysis_count: perCount,
-        complete: emailCount === perCount
+        complete: emailCount === perCount,
+        memory: memoryResult
       });
     }
 
@@ -304,6 +328,17 @@ app.post('/api/analyze', async function(req, res) {
     var fbPerCount = (fb.per_email || []).length;
     console.log('[FALLBACK] ' + analysisModel + ' | ' + fbEmailCount + ' emails, ' + fbPerCount + ' analyses | ' + tfms + 'ms');
 
+    // == Store in Pinecone + find similar deals (fallback path) ==
+    var fbMemory = { stored: false, similar: null };
+    if (process.env.PINECONE_API_KEY && fb.final && fb.final.deal_stage) {
+      var fbThreadId = 'thread_' + Date.now();
+      var [fbStore, fbSimilar] = await Promise.all([
+        pinecone.storeDeal(fbThreadId, fb, text),
+        pinecone.findSimilarDeals(fb, 5)
+      ]);
+      fbMemory = { stored: fbStore.success, thread_id: fbThreadId, similar: fbSimilar };
+    }
+
     return res.json({
       result: fb,
       model: analysisModel,
@@ -311,7 +346,8 @@ app.post('/api/analyze', async function(req, res) {
       total_ms: tfms,
       email_count: fbEmailCount,
       analysis_count: fbPerCount,
-      complete: fbEmailCount === fbPerCount
+      complete: fbEmailCount === fbPerCount,
+      memory: fbMemory
     });
 
   } catch (err) {
@@ -321,8 +357,61 @@ app.post('/api/analyze', async function(req, res) {
 });
 
 // == Health check ==
-app.get('/api/health', function(req, res) {
-  res.json({ status: 'ok', version: '1.0.1', hasKey: !!process.env.OPENROUTER_API_KEY });
+app.get('/api/health', async function(req, res) {
+  var pineconeStats = process.env.PINECONE_API_KEY ? await pinecone.getStats() : { enabled: false };
+  res.json({
+    status: 'ok',
+    version: '1.1.0',
+    hasOpenRouterKey: !!process.env.OPENROUTER_API_KEY,
+    hasPineconeKey: !!process.env.PINECONE_API_KEY,
+    pinecone: pineconeStats
+  });
+});
+
+// == Pinecone: Find similar deals for a manual query ==
+app.post('/api/memory/similar', async function(req, res) {
+  if (!process.env.PINECONE_API_KEY) return res.status(503).json({ error: 'Pinecone not configured' });
+  try {
+    var result = await pinecone.findSimilarDeals(req.body, req.body.top_k || 5);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// == Pinecone: Store/update CPP for a user ==
+app.post('/api/memory/cpp', async function(req, res) {
+  if (!process.env.PINECONE_API_KEY) return res.status(503).json({ error: 'Pinecone not configured' });
+  var userId = req.body.user_id;
+  if (!userId) return res.status(400).json({ error: 'user_id required' });
+  try {
+    var result = await pinecone.storeCPP(userId, req.body);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// == Pinecone: Get CPP for a user ==
+app.get('/api/memory/cpp/:userId', async function(req, res) {
+  if (!process.env.PINECONE_API_KEY) return res.status(503).json({ error: 'Pinecone not configured' });
+  try {
+    var result = await pinecone.getCPP(req.params.userId);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// == Pinecone: Stats ==
+app.get('/api/memory/stats', async function(req, res) {
+  if (!process.env.PINECONE_API_KEY) return res.status(503).json({ error: 'Pinecone not configured' });
+  try {
+    var result = await pinecone.getStats();
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.listen(PORT, function() { console.log('ClearSignals AI v1.0.1 on port ' + PORT); });
