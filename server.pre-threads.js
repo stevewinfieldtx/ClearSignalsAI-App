@@ -2,17 +2,6 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
-// == PostgreSQL database for thread persistence ==
-const db = require('./db');
-
-// Init DB tables on startup (non-blocking)
-if (process.env.DATABASE_URL) {
-  db.initDB()
-    .then(() => console.log('[DB] PostgreSQL ready'))
-    .catch(e => console.error('[DB] Init error:', e.message));
-} else {
-  console.log('[DB] DATABASE_URL not set \u2014 thread persistence disabled');
-}
 
 // == Pinecone vector memory ==
 const pinecone = require('./pinecone');
@@ -598,11 +587,4 @@ app.get('/api/memory/stats', async function(req, res) {
   }
 });
 
-// == Thread management routes (PostgreSQL-backed) ==
-if (process.env.DATABASE_URL) {
-  var threadRoutes = require('./routes-threads');
-  app.use('/api', threadRoutes);
-  console.log('[ROUTES] Thread management endpoints mounted at /api/threads');
-}
-
-app.listen(PORT, function() { console.log('ClearSignals AI v1.4.0 (persistent threads + differential analysis) on port ' + PORT); });
+app.listen(PORT, function() { console.log('ClearSignals AI v1.3.0 (direction-aware coaching) on port ' + PORT); });

@@ -1,7 +1,7 @@
 {
   "name": "clearsignals-ai",
-  "version": "1.1.0",
-  "description": "ClearSignals AI - Email Thread Intelligence with Vector Memory",
+  "version": "1.4.0",
+  "description": "ClearSignals AI - Email Thread Intelligence with Persistent Threads",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,6 +9,7 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "@pinecone-database/pinecone": "^3.0.0"
+    "@pinecone-database/pinecone": "^3.0.0",
+    "pg": "^8.13.0"
   }
 }
