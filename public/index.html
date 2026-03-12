@@ -118,7 +118,7 @@ textarea::placeholder{color:#8A9BAD;opacity:.5}
 </div>
 <div id="draftOverlay"></div>
 <script>
-var screen='home',threads=[],currentThread=null,viewIdx=-1,currentMode='coaching';
+var screen='home',threads=[],currentThread=null,viewIdx=-1,currentMode='coaching',postmortemResult=null;
 function $(id){return document.getElementById(id)}
 function col(v,mx){return mx===10?(v>=7?'#1A7A4A':v>=4?'#E8A020':'#C0392B'):(v>=65?'#1A7A4A':v>=35?'#E8A020':'#C0392B')}
 function esc(s){return(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
@@ -194,7 +194,7 @@ function doNewThread(){
 }
 
 // == OPEN THREAD ==
-function openThread(id){screen='thread';viewIdx=-1;
+function openThread(id){screen='thread';viewIdx=-1;postmortemResult=null;
   fetch('/api/threads/'+id).then(function(r){return r.json()}).then(function(d){currentThread=d;renderThread()}).catch(function(e){alert('Error: '+e.message);goHome()})
 }
 
@@ -250,6 +250,27 @@ function renderRight(){
   var t=currentThread.thread,emails=currentThread.emails||[],ctx=currentThread.context||{};
   var h='';
   if(viewIdx<0||viewIdx>=emails.length){$('R').innerHTML='';return}
+
+  // POSTMORTEM BUTTON + RESULTS for closed threads
+  if(t.status==='closed'){
+    h+='<div style="margin-bottom:12px">';
+    if(!postmortemResult){
+      h+='<button class="btn btn-gold" onclick="runPostmortem()" style="margin-bottom:8px">&#x1F50D; Run Postmortem Analysis</button>';
+      h+='<div style="font-size:10px;color:#8A9BAD;margin-bottom:12px">Analyze the complete thread to understand what happened, where it turned, and what to learn.</div>';
+    }else{
+      h+='<div style="font-size:12px;font-weight:700;color:#C9A84C;margin-bottom:8px">&#x1F50D; POSTMORTEM ANALYSIS</div>';
+      var pm=postmortemResult;
+      if(pm.summary)h+='<div class="box sum"><div class="t">WHAT HAPPENED</div><div class="txt">'+esc(pm.summary)+'</div></div>';
+      if(pm.coach)h+='<div class="box coach"><div class="t">KEY TAKEAWAYS</div><div class="txt">'+esc(pm.coach)+'</div></div>';
+      if(pm.next_steps)h+='<div class="box" style="background:rgba(46,139,192,0.08);border:1px solid rgba(46,139,192,0.2)"><div class="t" style="color:#2E8BC0">LESSONS FOR NEXT TIME</div><div class="txt">'+esc(pm.next_steps)+'</div></div>';
+      // Pivotal moments
+      var pivots=(pm.per_email||[]).filter(function(pe){return pe.next_time});
+      if(pivots.length){h+='<div class="slbl">PIVOTAL MOMENTS</div>';
+        for(var pi=0;pi<pivots.length;pi++){var pv=pivots[pi];h+='<div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-left:3px solid #C9A84C;border-radius:0 5px 5px 0;padding:8px 10px;margin-bottom:4px"><div style="font-size:10px;color:#8A9BAD;margin-bottom:2px">Email #'+pv.email_num+' &middot; Intent '+pv.intent+' &middot; Win '+pv.win_pct+'%</div><div style="font-size:11px;color:#F5F7FA;margin-bottom:4px">'+esc(pv.summary)+'</div><div style="font-size:11px;color:#F0CC6E">&#x1F504; '+esc(pv.next_time)+'</div></div>'}}
+      h+='<button class="btn btn-ghost" onclick="postmortemResult=null;renderRight()" style="margin-top:8px">Hide Postmortem</button>';
+    }
+    h+='</div><hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin-bottom:12px">';
+  }
 
   // EMAIL DETAIL — always show the selected email
   var em=emails[viewIdx];if(!em){$('R').innerHTML='';return}
@@ -330,6 +351,38 @@ function doAddEmail(tid){
 }
 
 // == CLOSE/REOPEN ==
+// == RUN POSTMORTEM ==
+function runPostmortem(){
+  if(!currentThread)return;
+  var emails=currentThread.emails||[];
+  // Build the full thread text from stored emails
+  var threadText=emails.map(function(em){
+    var dir=em.direction==='inbound'?'[INCOMING]':'[OUTGOING]';
+    return dir+'\nFrom: '+em.sender+'\n'+(em.email_date?'Date: '+em.email_date+'\n':'')+'\n'+em.body;
+  }).join('\n\n---\n\n');
+
+  // Show loading in the right panel
+  $('R').innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:28px;animation:pulse 1.5s ease-in-out infinite">&#x1F50D;</div><div style="font-size:14px;color:#C9A84C;margin-top:10px">Running postmortem analysis...</div><div id="pmTimer" style="font-size:20px;color:#F0CC6E;font-weight:700;margin-top:6px">0.0s</div></div>';
+  var t0=performance.now();
+  var iv=setInterval(function(){var e=document.getElementById('pmTimer');if(e)e.textContent=((performance.now()-t0)/1000).toFixed(1)+'s'},100);
+
+  fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:threadText,model:document.getElementById('modelSel').value,mode:'postmortem'})})
+  .then(function(r){if(!r.ok)return r.json().then(function(e){throw new Error(e.error)});return r.json()})
+  .then(function(data){
+    clearInterval(iv);
+    var p=data.result;
+    postmortemResult={
+      summary:p.final?p.final.summary:'',
+      coach:p.final?p.final.coach:'',
+      next_steps:p.final?p.final.next_steps:'',
+      per_email:p.per_email||[],
+      signals:p.final?p.final.signals:[]
+    };
+    renderRight();
+  })
+  .catch(function(ex){clearInterval(iv);alert('Postmortem failed: '+ex.message);renderRight()});
+}
+
 function toggleClose(id){var ns=currentThread&&currentThread.thread.status==='closed'?'active':'closed';
   fetch('/api/threads/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})})
   .then(function(r){return r.json()}).then(function(d){if(currentThread)currentThread.thread=d.thread;renderThread()}).catch(function(e){alert(e.message)})}
