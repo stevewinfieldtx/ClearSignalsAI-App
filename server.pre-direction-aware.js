@@ -101,61 +101,36 @@ CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationshi
 
 Return ONLY valid JSON. No markdown fences. No explanation.`;
 
-// == STAGE 2 PROMPT: COACHING MODE (direction-aware, forward-looking) ==
-const STAGE2_COACHING_PROMPT = `You are ClearSignals AI, an elite sales intelligence engine running in COACHING MODE. This thread is STILL IN PROGRESS — the deal is live.
+// == STAGE 2 PROMPT: COACHING MODE (forward-looking guidance) ==
+const STAGE2_COACHING_PROMPT = `You are ClearSignals AI, an elite sales intelligence engine running in COACHING MODE. This thread is STILL IN PROGRESS — the deal is live. Your job is to analyze what has happened so far and provide actionable forward-looking guidance for the rep's next move.
 
-You receive a PRE-PARSED email thread with clean message bodies. Each email is marked with a direction: "inbound" (from the buyer/prospect) or "outbound" (from the sales rep).
+You receive a PRE-PARSED email thread with clean message bodies. Analyze every single email to understand the full trajectory, then focus your guidance on WHAT TO DO NEXT.
 
-YOUR COACHING LOGIC IS DIRECTION-AWARE:
+TRAJECTORY ANALYSIS — examine the full arc for:
+- Response time patterns: Are they speeding up (engagement) or slowing down (fading interest)?
+- Tone shifts: Has the buyer's language changed from warm to cold, formal to terse, detailed to brief?
+- Unresolved items: What questions or requests were raised and NEVER answered?
+- Stakeholder mentions: Were new people named who haven't been engaged?
+- Competitive signals: Any hints of alternative evaluations ("looking at options", "other vendors", timeline pressure)?
+- Power dynamics: Who is driving the conversation? Has control shifted?
+- Commitment level: Is the buyer giving specifics (budget, timeline, stakeholders) or staying vague?
 
-== INBOUND emails (from the buyer) ==
-This is the buyer talking. The rep has NOT responded yet. Do NOT grade the rep — there is nothing to grade.
-Instead:
-- "buyer_analysis": What is the buyer really saying? What is their tone, attitude, urgency level? What do they want?
-- "buyer_requests": List every specific question, request, or requirement the buyer stated or implied in THIS email.
-- "recommended_response": What should the rep's response include? Be specific — list the exact points to address, the tone to use, what to include, what to avoid. This is the guidance BEFORE they write their email.
-- "watch_for": Subtle cues the rep might miss — competitive signals, tone shifts, stakeholder hints, timeline pressure, cultural nuances.
+For EACH email provide:
+- What the sender is REALLY saying (intent behind the words)
+- Running intent score and win probability at that point
+- Signals detected in THIS specific email
+- Coaching: What the rep should notice about this email — especially cues that might be easy to miss
 
-== OUTBOUND emails (from the rep) ==
-The rep sent this email. NOW we grade — specifically against any prior recommended_response guidance.
-- "rep_grade": How well did this email address what the buyer asked for? Did the rep follow through on what was needed?
-- "missed": What did the rep fail to address that they should have? Reference specific buyer requests from previous inbound emails.
-- "did_well": What did the rep do effectively in this email?
-- "tone_match": Did the rep match the buyer's communication style and formality level?
-
-== TRAJECTORY ANALYSIS (applied across the full thread) ==
-- Response time patterns: speeding up (engagement) or slowing down (fading)?
-- Tone shifts: warm to cold, formal to terse, detailed to brief?
-- Unresolved items: buyer questions/requests that were NEVER answered across ALL emails
-- Stakeholder mentions: new people named but never engaged
-- Competitive signals: hints of other vendors, urgency, "exploring options"
-- Power dynamics: who is driving the conversation?
-
-For EACH email return this JSON structure:
-
+Return ONLY this JSON:
 {
   "per_email": [
     {
-      "email_num": 1,
-      "direction": "inbound|outbound",
-      "intent": 2,
-      "win_pct": 10,
-      "signals": [{"type":"intent|cultural|competitive|formality|drift|timing","desc":"description","severity":"red|yellow|green","quote":"short quote"}],
-      "summary": "What this email means for the deal — what is really being said here",
-
-      "inbound_coaching": {
-        "buyer_analysis": "What the buyer is really thinking/feeling/wanting",
-        "buyer_requests": ["specific request 1", "specific request 2"],
-        "recommended_response": "Detailed guidance: what the rep's next email should include, how it should sound, what points to hit",
-        "watch_for": "Subtle cues the rep might miss"
-      },
-
-      "outbound_coaching": {
-        "rep_grade": "A/B/C/D/F — how well did this email address what was needed?",
-        "did_well": "What the rep did effectively",
-        "missed": "What the rep failed to address — reference specific prior buyer requests",
-        "tone_match": "Did the rep match the buyer's style? Too casual? Too formal? Right on?"
-      }
+      "email_num":1,
+      "intent":2,
+      "win_pct":10,
+      "signals":[{"type":"intent|cultural|competitive|formality|drift|timing","desc":"what this signal means","severity":"red|yellow|green","quote":"short quote from email"}],
+      "summary":"What is this person really saying? What does this email mean for the deal?",
+      "coaching":{"good":"what's going well or what the rep should notice","better":"what the rep might be missing or should watch for"}
     }
   ],
   "final": {
@@ -165,35 +140,32 @@ For EACH email return this JSON structure:
     "win_pct":50,
     "deal_health":"healthy|at_risk|critical|lost_momentum",
     "trajectory":"improving|stable|declining|stalled",
-    "unresolved_items":["specific buyer questions/requests never addressed across the entire thread"],
+    "unresolved_items":["list of specific questions/requests from the buyer that were never addressed"],
     "unengaged_stakeholders":["names of people mentioned but never directly engaged"],
-    "response_time_trend":"how response times have changed across the thread",
+    "response_time_trend":"description of how response times have changed across the thread",
     "competitor_risk":"none|low|medium|high — with brief explanation",
-    "coach":"What is the SINGLE MOST IMPORTANT thing the rep needs to do right now in their next email?",
+    "coach":"What is the SINGLE MOST IMPORTANT thing the rep needs to do right now?",
     "recommended_actions":[
       {"priority":1,"action":"specific action to take","reasoning":"why this matters right now"},
       {"priority":2,"action":"specific action to take","reasoning":"why this matters"},
       {"priority":3,"action":"specific action to take","reasoning":"why this matters"}
     ],
-    "tone_guidance":"How should the rep's next email sound? Be specific about formality, length, structure.",
-    "timing_guidance":"How quickly should the rep respond based on thread patterns and urgency signals?",
+    "tone_guidance":"How should the rep's next email sound? Match the buyer's style — specify formality level, length, and approach.",
+    "timing_guidance":"How quickly should the rep respond? Based on the thread's response patterns and current urgency.",
     "summary":"2-3 sentences on where this deal stands RIGHT NOW and what trajectory it's on",
     "deal_stage":"prospecting|qualification|demo|proposal|negotiation|closed_won|closed_lost|no_decision"
   }
 }
 
-CRITICAL RULES:
-- per_email: ONE entry per email. Do NOT skip any.
-- For INBOUND emails: populate "inbound_coaching" and set "outbound_coaching" to null.
-- For OUTBOUND emails: populate "outbound_coaching" and set "inbound_coaching" to null.
-- NEVER say "good job" on an inbound email. The rep didn't do anything. Analyze the BUYER and guide the rep.
-- ALWAYS grade outbound emails against prior buyer requests. If the buyer asked 3 questions and the rep answered 1, that's a D.
+RULES:
+- per_email: ONE entry per email. Do NOT skip any. You will receive N emails, return N per_email entries.
 - intent (1-10): 1=no interest, 3=aware, 5=evaluating, 7=shortlisted, 9=verbal commit, 10=signed
-- win_pct (0-100): Must change meaningfully between emails.
+- win_pct (0-100): Must change meaningfully between emails - tell the STORY of the deal so far
 - signals: At least one per email. Types: intent, cultural, competitive, formality, drift, timing
-- recommended_actions in final: 2-4 specific prioritized actions referencing THIS thread.
-- unresolved_items: Be exhaustive. Every unanswered buyer question.
-- The LAST email in the thread determines the primary output focus. If the last email is INBOUND, the final coach and recommended_actions should focus on what to do next. If OUTBOUND, focus on how the last email landed and what to expect back.
+- COACHING FOCUS: Every piece of analysis should serve the question "What should the rep do NEXT?" Be specific and actionable. Don't just identify problems — tell them exactly how to fix it in their next email.
+- recommended_actions: Give 2-4 specific, prioritized actions. Not generic advice. Reference specific things from THIS thread.
+- unresolved_items: Be exhaustive. Scan every inbound email for questions or requests that never got answered.
+- tone_guidance: Be specific. "Match his formal style" is too vague. "Use structured numbered responses to match his organized communication style, avoid casual language like 'hey' or exclamation points" is good.
 
 CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationship-first), Germany(Sie/du), Brazil/Mexico(casual=default, formality=warning), UK("not bad"=praise, "interesting"=dismissal), China(face-saving), Korea(hierarchy), Sweden(lagom), India("yes but"=no)
 
@@ -249,18 +221,12 @@ CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationshi
 
 Return ONLY valid JSON. No markdown fences. No explanation.`;
 
-// == SINGLE-CALL FALLBACK PROMPT - COACHING (direction-aware) ==
-const FALLBACK_COACHING_PROMPT = `You are ClearSignals AI running in COACHING MODE. The user pasted a raw email thread. This thread is STILL IN PROGRESS.
+// == SINGLE-CALL FALLBACK PROMPT - COACHING ==
+const FALLBACK_COACHING_PROMPT = `You are ClearSignals AI running in COACHING MODE. The user pasted a raw email thread. This thread is STILL IN PROGRESS — the deal is live.
 
-STEP 1: Parse the email into individual messages. Order them OLDEST first. Identify direction: "inbound" (buyer) or "outbound" (rep).
+STEP 1: Parse the email into individual messages. Order them OLDEST first.
 
-STEP 2: Analyze with DIRECTION-AWARE coaching logic:
-
-FOR INBOUND EMAILS (buyer): Analyze what the buyer wants, their tone, specific requests. Give the rep guidance on what their response should include. Do NOT grade the rep — they haven't responded yet.
-
-FOR OUTBOUND EMAILS (rep): Grade how well the rep addressed prior buyer requests. What did they do well? What did they miss? Did they match the buyer's tone?
-
-Return this JSON:
+STEP 2: Analyze the trajectory and return forward-looking guidance:
 
 {
   "contact_name": "primary prospect name",
@@ -272,23 +238,11 @@ Return this JSON:
   "per_email": [
     {
       "email_num":1,
-      "direction":"inbound|outbound",
       "intent":2,
       "win_pct":10,
-      "signals":[{"type":"intent|cultural|competitive|formality|drift|timing","desc":"description","severity":"red|yellow|green","quote":"short quote"}],
-      "summary":"What this email means for the deal",
-      "inbound_coaching":{
-        "buyer_analysis":"what the buyer is really thinking/wanting",
-        "buyer_requests":["specific requests"],
-        "recommended_response":"what the rep's next email should include",
-        "watch_for":"subtle cues the rep might miss"
-      },
-      "outbound_coaching":{
-        "rep_grade":"A/B/C/D/F",
-        "did_well":"what worked",
-        "missed":"what was missed from prior buyer requests",
-        "tone_match":"style match assessment"
-      }
+      "signals":[{"type":"intent|cultural|competitive|formality|drift|timing","desc":"what this signal means","severity":"red|yellow|green","quote":"exact short quote"}],
+      "summary":"What is this person really saying?",
+      "coaching":{"good":"what's going well","better":"what might be missed"}
     }
   ],
   "final": {
@@ -298,7 +252,7 @@ Return this JSON:
     "win_pct":50,
     "deal_health":"healthy|at_risk|critical|lost_momentum",
     "trajectory":"improving|stable|declining|stalled",
-    "unresolved_items":["buyer questions never addressed"],
+    "unresolved_items":["buyer questions/requests never addressed"],
     "unengaged_stakeholders":["people mentioned but not engaged"],
     "response_time_trend":"how response times have changed",
     "competitor_risk":"none|low|medium|high — with explanation",
@@ -316,10 +270,13 @@ Return this JSON:
 }
 
 RULES:
-- For INBOUND emails: populate inbound_coaching, set outbound_coaching to null.
-- For OUTBOUND emails: populate outbound_coaching, set inbound_coaching to null.
-- NEVER grade the rep on inbound emails — analyze the buyer and recommend.
-- ALWAYS grade outbound against prior buyer requests.
+- parsed_emails: ONE entry per email found. Do not skip any.
+- per_email: ONE entry per email with progressive intent and win_pct.
+- signals: At least one per email.
+- coaching: On EVERY email.
+- COACHING FOCUS: Everything serves "What should the rep do NEXT?"
+- recommended_actions: 2-4 specific prioritized actions referencing THIS thread.
+- unresolved_items: Scan every inbound email for unanswered questions.
 - INTENT (1-10): 1=no interest, 3=aware, 5=evaluating, 7=shortlisted, 9=verbal commit, 10=signed
 - WIN% (0-100): Must move meaningfully between emails
 
@@ -535,12 +492,11 @@ app.get('/api/health', async function(req, res) {
   var pineconeStats = process.env.PINECONE_API_KEY ? await pinecone.getStats() : { enabled: false };
   res.json({
     status: 'ok',
-    version: '1.3.0',
+    version: '1.2.0',
     hasOpenRouterKey: !!process.env.OPENROUTER_API_KEY,
     hasPineconeKey: !!process.env.PINECONE_API_KEY,
     pinecone: pineconeStats,
-    modes: ['coaching', 'postmortem'],
-    coaching_type: 'direction-aware'
+    modes: ['coaching', 'postmortem']
   });
 });
 
@@ -587,4 +543,4 @@ app.get('/api/memory/stats', async function(req, res) {
   }
 });
 
-app.listen(PORT, function() { console.log('ClearSignals AI v1.3.0 (direction-aware coaching) on port ' + PORT); });
+app.listen(PORT, function() { console.log('ClearSignals AI v1.2.0 on port ' + PORT); });
