@@ -383,38 +383,54 @@ async function callLLM(modelId, systemPrompt, userMessage, maxTokens) {
 // == JSON cleaner (aggressive) ==
 function cleanJSON(raw) {
   var s = (raw || '');
-  s = s.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+  s = s.replace(/```json\s*/gi, '').replace(/```/g, '').trim();
   var f = s.indexOf('{');
   var l = s.lastIndexOf('}');
   if (f < 0 || l < 0) throw new Error('No JSON object found in response');
   s = s.slice(f, l + 1);
 
+  // Attempt 1: direct parse
   try { return JSON.parse(s); } catch(e) {}
 
+  // Attempt 2: fix trailing commas
   var fix = s.replace(/,\s*([}\]])/g, '$1');
   try { return JSON.parse(fix); } catch(e) {}
 
+  // Attempt 3: escape control chars
   fix = fix.replace(/[\x00-\x1f]/g, function(c) {
-    if (c === '\n') return '\\n';
-    if (c === '\r') return '\\r';
-    if (c === '\t') return '\\t';
-    return '';
+    if (c === '\n') return '\\n'; if (c === '\r') return '\\r'; if (c === '\t') return '\\t'; return '';
   });
   try { return JSON.parse(fix); } catch(e) {}
 
-  var depth = 0, start = -1, end = -1;
-  for (var i = 0; i < raw.length; i++) {
-    if (raw[i] === '{') { if (depth === 0) start = i; depth++; }
-    if (raw[i] === '}') { depth--; if (depth === 0) { end = i; break; } }
+  // Attempt 4: repair truncated JSON (model ran out of tokens mid-response)
+  var repaired = fix;
+  var inStr = false, esc = false, braces = 0, brackets = 0;
+  for (var i = 0; i < repaired.length; i++) {
+    var c = repaired[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\') { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === '{') braces++;
+    if (c === '}') braces--;
+    if (c === '[') brackets++;
+    if (c === ']') brackets--;
   }
-  if (start >= 0 && end > start) {
-    var ex = raw.slice(start, end + 1);
-    ex = ex.replace(/,\s*([}\]])/g, '$1');
-    ex = ex.replace(/[\x00-\x1f]/g, function(c) {
-      if (c === '\n') return '\\n'; if (c === '\r') return '\\r'; if (c === '\t') return '\\t'; return '';
-    });
-    try { return JSON.parse(ex); } catch(e) {}
-  }
+  // Close open string
+  if (inStr) repaired += '"';
+  // Strip dangling partial values
+  repaired = repaired.replace(/,\s*"[^"]*"\s*:\s*"[^"]*$/, '');
+  repaired = repaired.replace(/,\s*"[^"]*"\s*:\s*$/, '');
+  repaired = repaired.replace(/,\s*"[^"]*$/, '');
+  repaired = repaired.replace(/,\s*$/, '');
+  // Close open brackets then braces
+  for (var a = 0; a < brackets; a++) repaired += ']';
+  for (var b = 0; b < braces; b++) repaired += '}';
+  try {
+    var result = JSON.parse(repaired);
+    console.log('[cleanJSON] Repaired truncated JSON successfully');
+    return result;
+  } catch(e) {}
 
   throw new Error('JSON parse failed. First 300: ' + s.slice(0, 300));
 }
@@ -462,7 +478,7 @@ app.post('/api/analyze', async function(req, res) {
       var t2 = Date.now();
       var stage2 = await callLLM(analysisModel, stage2Prompt,
         'Analyze this ' + emailCount + '-email thread. Return exactly ' + emailCount + ' per_email entries:\n\n' + cleanThread,
-        16000);
+        mode === 'postmortem' ? 32000 : 16000);
       var s2 = stage2.parsed;
       var t2ms = Date.now() - t2;
       var perCount = (s2.per_email || []).length;
@@ -507,7 +523,7 @@ app.post('/api/analyze', async function(req, res) {
 
     console.log('[FALLBACK] ' + mode.toUpperCase() + ' | Using single-call with ' + analysisModel);
     var tf = Date.now();
-    var fallback = await callLLM(analysisModel, fallbackPrompt, 'Analyze this pasted email thread:\n\n' + text, 16000);
+    var fallback = await callLLM(analysisModel, fallbackPrompt, 'Analyze this pasted email thread:\n\n' + text, mode === 'postmortem' ? 32000 : 16000);
     var fb = fallback.parsed;
     var tfms = Date.now() - tf;
     var fbEmailCount = (fb.parsed_emails || []).length;
