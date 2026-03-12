@@ -260,8 +260,8 @@ function renderRight(){
     if(ib.recommended_response){
       h+='<div class="box coach"><div class="t">&#x1F4DD; RECOMMENDED RESPONSE</div><div class="txt">'+esc(ib.recommended_response)+'</div></div>';
       // ACTION BUTTONS
-      h+='<button class="btn btn-action" onclick="writeItForMe('+viewIdx+')">&#x270D; Write It For Me</button>';
-      h+='<button class="btn btn-coming" style="margin-top:4px">&#x1F4CE; Find the Right Attachment <span style="opacity:.6">(Coming)</span></button>';
+      h+='<button class="btn btn-action" onclick="showUpgrade()">&#x270D; Write It For Me</button>';
+      h+='<button class="btn btn-coming" style="margin-top:4px" onclick="showComingSoon()">&#x1F4CE; Find Marketing Content</button>';
     }
     if(ib.watch_for)h+='<div class="box" style="background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.2);margin-top:10px"><div class="t" style="color:#E8A020">&#x1F440; WATCH FOR</div><div class="txt">'+esc(ib.watch_for)+'</div></div>';
   }
@@ -288,52 +288,15 @@ function renderRight(){
 }
 
 // == WRITE IT FOR ME ==
-function writeItForMe(idx){
-  var emails=currentThread.emails||[];
-  var em=emails[idx];if(!em||!em.analysis||!em.analysis.inbound_coaching)return;
-  var ib=em.analysis.inbound_coaching;
-  var ctx=currentThread.context||{};
-
-  // Show loading overlay
-  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closeDraft(event)"><div class="draft-modal"><div class="spin" style="font-size:24px;text-align:center">&#x270D;</div><div style="text-align:center;color:#C9A84C;font-size:12px;margin-top:8px">Writing your response...</div></div></div>';
-
-  // Build prompt for the LLM
-  var prompt='Write a professional email response based on this guidance:\n\n';
-  prompt+='RECOMMENDED APPROACH: '+(ib.recommended_response||'')+'\n\n';
-  if(ib.buyer_requests&&ib.buyer_requests.length)prompt+='BUYER REQUESTS TO ADDRESS:\n'+ib.buyer_requests.map(function(r,i){return(i+1)+'. '+r}).join('\n')+'\n\n';
-  if(ctx.tone_guidance)prompt+='TONE: '+ctx.tone_guidance+'\n\n';
-  prompt+='The buyer is: '+esc(em.sender)+'\n';
-  prompt+='Write ONLY the email body. No subject line. Professional but natural tone. Address every buyer request specifically.';
-
-  fetch('https://openrouter.ai/api/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'google/gemini-2.5-flash',
-      max_tokens:2000,
-      messages:[{role:'user',content:prompt}]
-    })
-  })
-  .then(function(r){return r.json()})
-  .then(function(data){
-    var draft=(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'Could not generate draft.';
-    showDraft(draft);
-  })
-  .catch(function(e){
-    showDraft('Error generating draft: '+e.message);
-  });
+function showUpgrade(){
+  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closePopup(event)"><div class="draft-modal" onclick="event.stopPropagation()"><div style="text-align:center;padding:20px 10px"><div style="font-size:32px;margin-bottom:12px">&#x270D;</div><div style="font-size:16px;font-weight:700;color:#C9A84C;margin-bottom:8px">Write It For Me</div><div style="font-size:12px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">Upgrade to <strong style="color:#C9A84C">TrueWriting</strong> to automatically draft personalized responses.</div><div style="font-size:11px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">TrueWriting is a proprietary system that analyzes <strong style="color:#C9A84C">30 distinct communication variables</strong> across the historical record of each individual contact... emails, call transcripts, video meetings... building a complete profile of how they communicate, what they respond to, and what moves them to action.</div><div style="font-size:11px;color:#8A9BAD;line-height:1.5;margin-bottom:16px">The result: drafted responses that don\'t just say the right things... they say them the way that works for <em>this specific person</em>.</div><button class="btn btn-gold" onclick="closePopup()" style="max-width:200px;margin:0 auto">Got It</button></div></div></div>';
 }
 
-function showDraft(text){
-  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closeDraft(event)"><div class="draft-modal" onclick="event.stopPropagation()"><div class="t">&#x270D; DRAFT RESPONSE</div><div class="draft-text">'+esc(text)+'</div><div class="btn-row"><button class="btn btn-gold" onclick="copyDraft()">Copy to Clipboard</button><button class="btn btn-ghost" onclick="closeDraft()">Close</button></div></div></div>';
-  window._lastDraft=text;
+function showComingSoon(){
+  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closePopup(event)"><div class="draft-modal" onclick="event.stopPropagation()"><div style="text-align:center;padding:20px 10px"><div style="font-size:32px;margin-bottom:12px">&#x1F4CE;</div><div style="font-size:16px;font-weight:700;color:#2E8BC0;margin-bottom:8px">Find Marketing Content</div><div style="font-size:12px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">Coming soon: ClearSignals will automatically suggest the right case studies, one-pagers, ROI calculators, and battle cards based on what the buyer is asking for.</div><button class="btn btn-ghost" onclick="closePopup()" style="max-width:200px;margin:0 auto">Got It</button></div></div></div>';
 }
 
-function copyDraft(){
-  if(window._lastDraft){navigator.clipboard.writeText(window._lastDraft).then(function(){closeDraft()}).catch(function(){alert('Copy failed')})}
-}
-
-function closeDraft(e){
+function closePopup(e){
   if(e&&e.target&&!e.target.classList.contains('draft-overlay'))return;
   $('draftOverlay').innerHTML='';
 }
