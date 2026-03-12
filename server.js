@@ -546,12 +546,13 @@ app.get('/api/health', async function(req, res) {
   var pineconeStats = process.env.PINECONE_API_KEY ? await pinecone.getStats() : { enabled: false };
   res.json({
     status: 'ok',
-    version: '1.3.0',
+    version: '1.4.0',
     hasOpenRouterKey: !!process.env.OPENROUTER_API_KEY,
     hasPineconeKey: !!process.env.PINECONE_API_KEY,
     pinecone: pineconeStats,
     modes: ['coaching', 'postmortem'],
-    coaching_type: 'direction-aware'
+    coaching_type: 'direction-aware',
+    hasDatabase: !!process.env.DATABASE_URL
   });
 });
 
