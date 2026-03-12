@@ -109,7 +109,7 @@ textarea::placeholder{color:#8A9BAD;opacity:.5}
   <div class="right" id="R"></div>
 </div>
 <script>
-var screen='home',threads=[],currentThread=null,viewIdx=-1,currentMode='coaching',hasDB=false;
+var screen='home',threads=[],currentThread=null,viewIdx=-1,currentMode='coaching';
 function $(id){return document.getElementById(id)}
 function col(v,mx){return mx===10?(v>=7?'#1A7A4A':v>=4?'#E8A020':'#C0392B'):(v>=65?'#1A7A4A':v>=35?'#E8A020':'#C0392B')}
 function esc(s){return(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
@@ -117,17 +117,15 @@ function gradeCol(g){g=(g||'C')[0].toUpperCase();return g==='A'?'#1A7A4A':g==='B
 function ago(d){if(!d)return'';var ms=Date.now()-new Date(d).getTime();var m=Math.floor(ms/60000);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago'}
 function jp(v){if(!v)return[];if(typeof v==='string')try{return JSON.parse(v)}catch(e){return[]}return v}
 
-// Check DB availability
-fetch('/api/health').then(function(r){return r.json()}).then(function(d){hasDB=!!(d.version&&d.version.indexOf('1.4')>=0);goHome()}).catch(function(){goHome()});
+// Always load threads from database on startup
+goHome();
 
 // == HOME ==
 function goHome(){screen='home';viewIdx=-1;currentThread=null;
-  if(hasDB){fetch('/api/threads').then(function(r){return r.json()}).then(function(d){threads=d.threads||[];renderHome()}).catch(function(){threads=[];renderHome()})}
-  else{threads=[];renderHome()}
+  fetch('/api/threads').then(function(r){return r.json()}).then(function(d){threads=d.threads||[];renderHome()}).catch(function(){threads=[];renderHome()});
 }
 function renderHome(){
   var h='<button class="btn btn-gold" onclick="showNewThread()" style="margin-bottom:10px">+ New Thread</button>';
-  if(!hasDB)h+='<div style="font-size:9px;color:#E8A020;padding:6px 8px;background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.15);border-radius:5px;margin-bottom:8px">No DATABASE_URL set. Threads won\'t persist between sessions.</div>';
   var active=threads.filter(function(t){return t.status==='active'});
   var closed=threads.filter(function(t){return t.status!=='active'});
   if(active.length){
@@ -142,7 +140,7 @@ function renderHome(){
   if(closed.length){h+='<div class="slbl" style="margin-top:12px">CLOSED ('+closed.length+')</div>';
     for(var i=0;i<closed.length;i++){var t=closed[i];h+='<div class="tcard closed" onclick="openThread('+t.id+')"><div class="tc-name">'+esc(t.contact_name||'Unknown')+'</div><div class="tc-meta"><span>'+(t.email_count||0)+' emails</span></div></div>'}
   }
-  if(!threads.length&&hasDB)h+='<div style="padding:20px;text-align:center;color:#8A9BAD;font-size:11px">No threads yet. Start one!</div>';
+  if(!threads.length)h+='<div style="padding:20px;text-align:center;color:#8A9BAD;font-size:11px">No threads yet. Start one!</div>';
   $('L').innerHTML=h;
   $('R').innerHTML='<div class="ph"><div class="in"><div class="ico">&#x1F4E7;</div><h3>ClearSignals AI</h3><p>Select a thread to continue coaching, or start a new one.</p></div></div>';
 }
@@ -150,7 +148,7 @@ function renderHome(){
 // == NEW THREAD ==
 function showNewThread(){screen='new_thread';
   var h='<div class="mode-toggle"><button class="mode-btn active" id="mC" onclick="setM(\'coaching\')">&#x1F3AF; Coaching</button><button class="mode-btn" id="mP" onclick="setM(\'postmortem\')">&#x1F50D; Postmortem</button></div>';
-  h+='<div class="slbl" id="mD">PASTE YOUR EMAIL THREAD</div>';
+  h+='<div class="slbl">PASTE YOUR EMAIL THREAD</div>';
   h+='<textarea id="ta" style="height:calc(100vh - 200px)" placeholder="Paste the full email thread here..."></textarea>';
   h+='<button class="btn btn-gold" id="goBtn" onclick="doNewThread()">Analyze Thread</button>';
   h+='<button class="btn btn-ghost" onclick="goHome()" style="margin-top:4px">Cancel</button>';
@@ -166,17 +164,15 @@ function doNewThread(){
   var mt=document.querySelector('.mode-toggle');if(mt)mt.style.display='none';
   $('loadBox').style.display='block';$('loadMsg').textContent='Analyzing trajectory...';
   var t0=performance.now(),iv=setInterval(function(){var e=$('timer');if(e)e.textContent=((performance.now()-t0)/1000).toFixed(1)+'s'},100);
-  var url=hasDB?'/api/threads':'/api/analyze';
-  var body=hasDB?{text:txt,model:$('modelSel').value}:{text:txt,model:$('modelSel').value,mode:currentMode};
-  fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+  fetch('/api/threads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:txt,model:$('modelSel').value})})
   .then(function(r){if(!r.ok)return r.json().then(function(e){throw new Error(e.error)});return r.json()})
-  .then(function(data){clearInterval(iv);if(hasDB&&data.thread){openThread(data.thread.id)}else{displayFallback(data)}})
+  .then(function(data){clearInterval(iv);openThread(data.thread.id)})
   .catch(function(ex){clearInterval(iv);var e=$('errMsg');if(e)e.textContent=ex.message;setTimeout(goHome,4000)});
 }
 
 // == OPEN THREAD ==
 function openThread(id){screen='thread';viewIdx=-1;
-  fetch('/api/threads/'+id).then(function(r){return r.json()}).then(function(d){currentThread=d;renderThread()}).catch(function(e){alert(e.message);goHome()})
+  fetch('/api/threads/'+id).then(function(r){return r.json()}).then(function(d){currentThread=d;renderThread()}).catch(function(e){alert('Error loading thread: '+e.message);goHome()})
 }
 
 // == RENDER THREAD ==
@@ -184,7 +180,7 @@ function renderThread(){
   if(!currentThread)return;
   var t=currentThread.thread,emails=currentThread.emails||[],ctx=currentThread.context||{};
   var h='';
-  // Add email box at top
+  // Add email box
   h+='<div class="add-email-box"><div class="t">&#x2709; Paste Next Email</div>';
   h+='<textarea id="addTa" placeholder="Paste the newest email here..."></textarea>';
   h+='<button class="btn btn-gold" onclick="doAddEmail('+t.id+')" style="margin-top:4px">Analyze New Email</button></div>';
@@ -213,7 +209,10 @@ function renderThread(){
     h+='<div class="meta">'+esc(em.sender)+(em.email_date?' &middot; '+esc(em.email_date):'')+'</div>';
     h+='<div class="snip">'+esc(em.snippet)+'</div></div>';
   }
-  h+='<button class="btn btn-ghost" onclick="toggleClose('+t.id+')" style="margin-top:8px">'+(t.status==='closed'?'Reopen Thread':'Close Thread')+'</button>';
+  // Thread actions
+  h+='<button class="btn btn-ghost" onclick="goHome()" style="margin-top:8px">&#x2190; Back to Threads</button>';
+  h+='<button class="btn btn-ghost" onclick="toggleClose('+t.id+')" style="margin-top:4px">'+(t.status==='closed'?'Reopen Thread':'Close Thread')+'</button>';
+  // Loading box
   h+='<div id="loadBox" style="display:none"><div class="spin" style="font-size:24px">&#x1F50D;</div><div id="loadMsg" style="font-size:12px;color:#C9A84C;margin:6px 0">Analyzing...</div><div id="timer" style="font-size:18px;color:#F0CC6E;font-weight:700">0.0s</div><div id="errMsg" style="color:#C0392B;font-size:10px;margin-top:6px"></div></div>';
   $('L').innerHTML=h;
   renderRight();
@@ -299,12 +298,6 @@ function doAddEmail(tid){
 function toggleClose(id){var ns=currentThread&&currentThread.thread.status==='closed'?'active':'closed';
   fetch('/api/threads/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:ns})})
   .then(function(r){return r.json()}).then(function(d){if(currentThread)currentThread.thread=d.thread;renderThread()}).catch(function(e){alert(e.message)})}
-
-// == FALLBACK (no DB) ==
-function displayFallback(data){screen='thread';var p=data.result;
-  var fe=(p.parsed_emails||[]).map(function(e,i){var pe=(p.per_email||[])[i]||{};return{id:i,email_index:e.index,direction:e.direction,sender:e.from,email_date:e.date,body:'',snippet:e.snippet,analyzed:true,analysis:{summary:pe.summary,intent:pe.intent,win_pct:pe.win_pct,signals:pe.signals||[],inbound_coaching:pe.inbound_coaching||null,outbound_coaching:pe.outbound_coaching||null}}});
-  var f=p.final||{};currentThread={thread:{id:0,contact_name:p.contact_name,company_name:p.company_name,rep_name:p.rep_name,deal_stage:f.deal_stage,intent:f.intent,win_pct:f.win_pct,deal_health:f.deal_health,trajectory:f.trajectory,status:'active'},emails:fe,context:{unresolved_items:f.unresolved_items||[],unengaged_stakeholders:f.unengaged_stakeholders||[],last_recommended_response:f.coach||'',tone_guidance:f.tone_guidance||'',response_time_trend:f.response_time_trend||'',competitor_risk:f.competitor_risk||''}};
-  viewIdx=-1;renderThread()}
 </script>
 </body>
 </html>
