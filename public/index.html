@@ -126,31 +126,46 @@ function gradeCol(g){g=(g||'C')[0].toUpperCase();return g==='A'?'#1A7A4A':g==='B
 function ago(d){if(!d)return'';var ms=Date.now()-new Date(d).getTime();var m=Math.floor(ms/60000);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago'}
 function jp(v){if(!v)return[];if(typeof v==='string')try{return JSON.parse(v)}catch(e){return[]}return v}
 
-goHome();
+// == EMAIL GATE ==
+function checkGate(){
+  if(document.cookie.indexOf('cs_email=')>=0){goHome();return}
+  showGate();
+}
+function showGate(){
+  $('L').innerHTML='';
+  $('R').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%"><div style="max-width:480px;padding:24px"><div style="text-align:center;margin-bottom:20px"><div style="font-size:14px;font-weight:800;letter-spacing:.06em">CLEAR<span style="color:#C9A84C">SIGNALS</span> AI</div><div style="font-size:10px;color:#8A9BAD;margin-top:4px">Sales Intelligence Engine</div></div><div style="font-size:13px;color:#F5F7FA;line-height:1.7;margin-bottom:16px">Every email your prospect sends is full of signals... buying intent, competitive threats, objections, urgency shifts, and personality cues that most reps miss.</div><div style="font-size:13px;color:#F5F7FA;line-height:1.7;margin-bottom:16px">ClearSignals AI reads what your customers are <em>really</em> saying. It analyzes every inbound email and gives you actionable suggestions... ideas on what to address, the right tone to strike, and cues you might otherwise miss. When your rep responds, it grades the response against what was recommended.</div><div style="font-size:13px;color:#F5F7FA;line-height:1.7;margin-bottom:20px">Stop guessing. Start seeing the signals.</div><div style="margin-bottom:12px"><input id="gateEmail" type="email" placeholder="Enter your email to get started" style="width:100%;padding:10px 12px;background:#112336;border:1px solid rgba(201,168,76,0.3);border-radius:5px;color:#F5F7FA;font-size:12px;outline:none" onkeypress="if(event.key===\'Enter\')submitGate()"></div><button class="btn btn-gold" onclick="submitGate()" style="width:100%">Get Started</button><div style="font-size:9px;color:#8A9BAD;text-align:center;margin-top:10px">Your data never leaves your environment. No emails are stored on our servers, no PII is transmitted. Your email simply keeps your analysis history accessible when you return.</div></div></div>';
+}
+function submitGate(){
+  var email=document.getElementById('gateEmail');
+  if(!email||!email.value.trim()||email.value.indexOf('@')<1){alert('Please enter a valid email address');return}
+  var val=email.value.trim();
+  document.cookie='cs_email='+encodeURIComponent(val)+';max-age=31536000;path=/;SameSite=Lax';
+  goHome();
+}
+checkGate();
 
 // == HOME ==
 function goHome(){screen='home';viewIdx=-1;currentThread=null;
   fetch('/api/threads').then(function(r){return r.json()}).then(function(d){threads=d.threads||[];renderHome()}).catch(function(){threads=[];renderHome()});
 }
 function renderHome(){
-  var h='<button class="btn btn-gold" onclick="showNewThread()" style="margin-bottom:10px">+ New Thread</button>';
+  var h='';
+  h+='<div class="mode-toggle" style="margin-bottom:8px"><button class="mode-btn'+(currentMode==='coaching'?' active':'')+'" onclick="currentMode=\'coaching\';renderHome()">&#x1F3AF; Coaching</button><button class="mode-btn'+(currentMode==='postmortem'?' active':'')+'" onclick="currentMode=\'postmortem\';renderHome()">&#x1F50D; Postmortem</button></div>';
+  h+='<button class="btn btn-gold" onclick="showNewThread()" style="margin-bottom:10px">+ New Thread</button>';
   var active=threads.filter(function(t){return t.status==='active'});
   var closed=threads.filter(function(t){return t.status!=='active'});
-  if(active.length){
-    h+='<div class="slbl">ACTIVE THREADS ('+active.length+')</div>';
-    for(var i=0;i<active.length;i++){var t=active[i];
-      h+='<div class="tcard" onclick="openThread('+t.id+')"><div class="tc-name">'+esc(t.contact_name||'Unknown')+'</div>';
-      if(t.company_name)h+='<div class="tc-company">'+esc(t.company_name)+'</div>';
-      h+='<div style="display:flex;gap:6px;margin-top:4px"><span class="tc-pill" style="color:'+col(t.intent||1,10)+'">Intent '+(t.intent||'?')+'</span><span class="tc-pill" style="color:'+col(t.win_pct||0,100)+'">'+(t.win_pct||0)+'%</span><span class="tc-stage">'+(t.deal_stage||'?').replace(/_/g,' ')+'</span></div>';
-      h+='<div class="tc-meta"><span>'+(t.email_count||0)+' emails</span><span>'+ago(t.last_email_at||t.updated_at)+'</span></div></div>';
-    }
+  if(currentMode==='coaching'){
+    if(active.length){h+='<div class="slbl">ACTIVE DEALS ('+active.length+')</div>';
+      for(var i=0;i<active.length;i++){var t=active[i];h+='<div class="tcard" onclick="openThread('+t.id+')"><div class="tc-name">'+esc(t.contact_name||'Unknown')+'</div>';if(t.company_name)h+='<div class="tc-company">'+esc(t.company_name)+'</div>';h+='<div style="display:flex;gap:6px;margin-top:4px"><span class="tc-pill" style="color:'+col(t.intent||1,10)+'">Intent '+(t.intent||'?')+'</span><span class="tc-pill" style="color:'+col(t.win_pct||0,100)+'">'+(t.win_pct||0)+'%</span><span class="tc-stage">'+(t.deal_stage||'?').replace(/_/g,' ')+'</span></div><div class="tc-meta"><span>'+(t.email_count||0)+' emails</span><span>'+ago(t.last_email_at||t.updated_at)+'</span></div></div>'}}
+    if(!active.length)h+='<div style="padding:20px;text-align:center;color:#8A9BAD;font-size:11px">No active deals. Start one!</div>';
+  }else{
+    if(closed.length){h+='<div class="slbl">CLOSED DEALS ('+closed.length+')</div>';
+      for(var i=0;i<closed.length;i++){var t=closed[i];h+='<div class="tcard" onclick="openThread('+t.id+')"><div class="tc-name">'+esc(t.contact_name||'Unknown')+'</div>';if(t.company_name)h+='<div class="tc-company">'+esc(t.company_name)+'</div>';h+='<div style="display:flex;gap:6px;margin-top:4px"><span class="tc-pill" style="color:'+col(t.intent||1,10)+'">Intent '+(t.intent||'?')+'</span><span class="tc-pill" style="color:'+col(t.win_pct||0,100)+'">'+(t.win_pct||0)+'%</span><span class="tc-stage">'+(t.deal_stage||'?').replace(/_/g,' ')+'</span></div><div class="tc-meta"><span>'+(t.email_count||0)+' emails</span></div></div>'}}
+    if(!closed.length)h+='<div style="padding:20px;text-align:center;color:#8A9BAD;font-size:11px">No closed deals for postmortem review yet.</div>';
   }
-  if(closed.length){h+='<div class="slbl" style="margin-top:12px">CLOSED ('+closed.length+')</div>';
-    for(var i=0;i<closed.length;i++){var t=closed[i];h+='<div class="tcard closed" onclick="openThread('+t.id+')"><div class="tc-name">'+esc(t.contact_name||'Unknown')+'</div><div class="tc-meta"><span>'+(t.email_count||0)+' emails</span></div></div>'}
-  }
-  if(!threads.length)h+='<div style="padding:20px;text-align:center;color:#8A9BAD;font-size:11px">No threads yet. Start one!</div>';
   $('L').innerHTML=h;
-  $('R').innerHTML='<div class="ph"><div class="in"><div class="ico">&#x1F4E7;</div><h3>ClearSignals AI</h3><p>Select a thread to continue coaching, or start a new one.</p></div></div>';
+  if(currentMode==='coaching'){$('R').innerHTML='<div class="ph"><div class="in"><div class="ico">&#x1F3AF;</div><h3>Sales Coaching</h3><p>Select an active deal to get real-time coaching, or start a new thread.</p></div></div>'}
+  else{$('R').innerHTML='<div class="ph"><div class="in"><div class="ico">&#x1F50D;</div><h3>Postmortem Analysis</h3><p>Review closed deals to understand what happened, where it turned, and what to learn for next time.</p></div></div>'}
 }
 
 // == NEW THREAD ==
@@ -289,7 +304,7 @@ function renderRight(){
 
 // == WRITE IT FOR ME ==
 function showUpgrade(){
-  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closePopup(event)"><div class="draft-modal" onclick="event.stopPropagation()"><div style="text-align:center;padding:20px 10px"><div style="font-size:32px;margin-bottom:12px">&#x270D;</div><div style="font-size:16px;font-weight:700;color:#C9A84C;margin-bottom:8px">Write It For Me</div><div style="font-size:12px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">Upgrade to <strong style="color:#C9A84C">TrueWriting</strong> to automatically draft personalized responses.</div><div style="font-size:11px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">TrueWriting is a proprietary system that analyzes <strong style="color:#C9A84C">30 distinct communication variables</strong> across the historical record of each individual contact... emails, call transcripts, video meetings... building a complete profile of how they communicate, what they respond to, and what moves them to action.</div><div style="font-size:11px;color:#8A9BAD;line-height:1.5;margin-bottom:16px">The result: drafted responses that don\'t just say the right things... they say them the way that works for <em>this specific person</em>.</div><button class="btn btn-gold" onclick="closePopup()" style="max-width:200px;margin:0 auto">Got It</button></div></div></div>';
+  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closePopup(event)"><div class="draft-modal" onclick="event.stopPropagation()"><div style="text-align:center;padding:20px 10px"><div style="font-size:32px;margin-bottom:12px">&#x270D;</div><div style="font-size:16px;font-weight:700;color:#C9A84C;margin-bottom:8px">Write It For Me</div><div style="font-size:12px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">Upgrade to <strong style="color:#C9A84C">TrueWriting</strong> to automatically draft responses in your authentic voice.</div><div style="font-size:11px;color:#F5F7FA;line-height:1.6;margin-bottom:16px">TrueWriting analyzes <strong style="color:#C9A84C">your</strong> communication across emails, videos, call transcripts, and more... building a proprietary profile of <strong style="color:#C9A84C">30+ distinct communication variables</strong> that define how you write, speak, and persuade.</div><div style="font-size:11px;color:#8A9BAD;line-height:1.5;margin-bottom:16px">The result: drafted responses that follow ClearSignals coaching... written the way <em>you</em> actually communicate.</div><button class="btn btn-gold" onclick="closePopup()" style="max-width:200px;margin:0 auto">Got It</button></div></div></div>';
 }
 
 function showComingSoon(){
