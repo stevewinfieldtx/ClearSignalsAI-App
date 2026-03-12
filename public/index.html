@@ -25,7 +25,9 @@ textarea::placeholder{color:#8A9BAD;opacity:.5}
 .btn-gold{background:#C9A84C;color:#0B1929}.btn-gold:hover:not(:disabled){background:#F0CC6E}
 .btn-ghost{background:rgba(255,255,255,0.04);color:#8A9BAD;border:1px solid rgba(255,255,255,0.08)}
 .btn-ghost:hover{background:rgba(255,255,255,0.08)}
-.btn-export{background:rgba(27,79,138,0.15);border:1px solid rgba(46,139,192,0.3);color:#2E8BC0}
+.btn-action{background:rgba(46,139,192,0.12);border:1px solid rgba(46,139,192,0.3);color:#2E8BC0;padding:8px 0;font-size:10px}
+.btn-action:hover{background:rgba(46,139,192,0.22)}
+.btn-coming{background:rgba(255,255,255,0.03);border:1px dashed rgba(255,255,255,0.12);color:#8A9BAD;padding:8px 0;font-size:10px;cursor:default}
 .slbl{font-size:8px;font-weight:700;letter-spacing:.12em;color:#8A9BAD;margin:8px 0 5px;text-transform:uppercase}
 .mode-toggle{display:flex;margin-bottom:8px;border-radius:5px;overflow:hidden;border:1px solid rgba(255,255,255,0.08)}
 .mode-btn{flex:1;padding:7px 0;text-align:center;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .15s;border:none;background:rgba(255,255,255,0.03);color:#8A9BAD}
@@ -45,7 +47,6 @@ textarea::placeholder{color:#8A9BAD;opacity:.5}
 .ecard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid rgba(255,255,255,0.08);border-radius:0 5px 5px 0;padding:6px 8px;margin-bottom:3px;cursor:pointer;transition:all .12s}
 .ecard:hover{border-color:rgba(201,168,76,0.3)}
 .ecard.act{background:rgba(255,255,255,0.07);border-color:#C9A84C}
-.ecard.final{border-left-color:#C9A84C}
 .dir{font-size:7px;font-weight:700;letter-spacing:.06em;padding:1px 4px;border-radius:2px;display:inline-block}
 .dir.in{color:#2E8BC0;background:rgba(46,139,192,0.15)}.dir.out{color:#C9A84C;background:rgba(201,168,76,0.15)}
 .ecard .num{font-size:10px;font-weight:600;margin-left:3px}
@@ -96,6 +97,13 @@ textarea::placeholder{color:#8A9BAD;opacity:.5}
 .grade-letter.A{color:#1A7A4A}.grade-letter.B{color:#2E8BC0}.grade-letter.C{color:#E8A020}.grade-letter.D,.grade-letter.F{color:#C0392B}
 .breq{background:rgba(46,139,192,0.06);border:1px solid rgba(46,139,192,0.15);border-radius:5px;padding:5px 8px;margin-bottom:3px;font-size:11px;color:#F5F7FA;display:flex;align-items:flex-start;gap:6px}
 .breq:before{content:"\25B8";color:#2E8BC0;font-size:10px;margin-top:1px;flex-shrink:0}
+/* Draft modal */
+.draft-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:100;display:flex;align-items:center;justify-content:center}
+.draft-modal{background:#112336;border:1px solid rgba(201,168,76,0.3);border-radius:8px;padding:16px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto}
+.draft-modal .t{font-size:10px;font-weight:700;color:#C9A84C;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.draft-modal .draft-text{font-size:12px;color:#F5F7FA;line-height:1.7;white-space:pre-wrap;margin-bottom:12px;padding:12px;background:rgba(255,255,255,0.04);border-radius:5px;border:1px solid rgba(255,255,255,0.08)}
+.draft-modal .btn-row{display:flex;gap:8px}
+.draft-modal .btn-row .btn{flex:1}
 @media(max-width:768px){.main{flex-direction:column}.left{width:100%;min-width:auto;max-height:45vh}.right{max-height:55vh}}
 </style>
 </head>
@@ -108,6 +116,7 @@ textarea::placeholder{color:#8A9BAD;opacity:.5}
   <div class="left" id="L"></div>
   <div class="right" id="R"></div>
 </div>
+<div id="draftOverlay"></div>
 <script>
 var screen='home',threads=[],currentThread=null,viewIdx=-1,currentMode='coaching';
 function $(id){return document.getElementById(id)}
@@ -117,7 +126,6 @@ function gradeCol(g){g=(g||'C')[0].toUpperCase();return g==='A'?'#1A7A4A':g==='B
 function ago(d){if(!d)return'';var ms=Date.now()-new Date(d).getTime();var m=Math.floor(ms/60000);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago'}
 function jp(v){if(!v)return[];if(typeof v==='string')try{return JSON.parse(v)}catch(e){return[]}return v}
 
-// Always load threads from database on startup
 goHome();
 
 // == HOME ==
@@ -172,7 +180,7 @@ function doNewThread(){
 
 // == OPEN THREAD ==
 function openThread(id){screen='thread';viewIdx=-1;
-  fetch('/api/threads/'+id).then(function(r){return r.json()}).then(function(d){currentThread=d;renderThread()}).catch(function(e){alert('Error loading thread: '+e.message);goHome()})
+  fetch('/api/threads/'+id).then(function(r){return r.json()}).then(function(d){currentThread=d;renderThread()}).catch(function(e){alert('Error: '+e.message);goHome()})
 }
 
 // == RENDER THREAD ==
@@ -184,16 +192,16 @@ function renderThread(){
   h+='<div class="add-email-box"><div class="t">&#x2709; Paste Next Email</div>';
   h+='<textarea id="addTa" placeholder="Paste the newest email here..."></textarea>';
   h+='<button class="btn btn-gold" onclick="doAddEmail('+t.id+')" style="margin-top:4px">Analyze New Email</button></div>';
-  // Back + header
+  // Header with scores
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">';
-  h+='<div class="slbl" style="margin:0">'+emails.length+' EMAILS</div>';
-  h+='<span style="font-size:9px;color:#8A9BAD;cursor:pointer;text-decoration:underline" onclick="goHome()">&#x2190; All Threads</span></div>';
-  // Overview card
-  h+='<div class="ecard final '+(viewIdx===-1?'act':'')+'" onclick="selV(-1)">';
-  h+='<div style="font-size:11px;font-weight:700;color:#C9A84C">'+esc(t.contact_name||'Thread')+(t.company_name?' / '+esc(t.company_name):'')+'</div>';
-  h+='<div style="font-size:9px;color:#8A9BAD">Intent '+(t.intent||'?')+'/10 &middot; Win '+(t.win_pct||0)+'% &middot; '+(t.deal_stage||'unknown').replace(/_/g,' ')+'</div></div>';
-  // Email cards
-  for(var i=0;i<emails.length;i++){
+  h+='<div style="display:flex;align-items:center;gap:6px">';
+  h+='<span style="font-size:11px;font-weight:700;color:#C9A84C">'+esc(t.contact_name||'Thread')+'</span>';
+  h+='<span class="pill" style="background:rgba(255,255,255,0.06);color:'+col(t.intent||1,10)+'">'+(t.intent||'?')+'</span>';
+  h+='<span class="pill" style="background:rgba(255,255,255,0.06);color:'+col(t.win_pct||0,100)+'">'+(t.win_pct||0)+'%</span>';
+  h+='</div>';
+  h+='<span style="font-size:9px;color:#8A9BAD;cursor:pointer;text-decoration:underline" onclick="goHome()">&#x2190; All</span></div>';
+  // Email cards — NEWEST FIRST
+  for(var i=emails.length-1;i>=0;i--){
     var em=emails[i],a=em.analysis||{},isIn=em.direction==='inbound',sigs=a.signals||[];
     var worst='rgba(255,255,255,0.08)';
     for(var j=0;j<sigs.length;j++){if(sigs[j].severity==='red'){worst='#C0392B';break}if(sigs[j].severity==='yellow')worst='#E8A020';if(sigs[j].severity==='green'&&worst!=='#E8A020')worst='#1A7A4A'}
@@ -215,6 +223,8 @@ function renderThread(){
   // Loading box
   h+='<div id="loadBox" style="display:none"><div class="spin" style="font-size:24px">&#x1F50D;</div><div id="loadMsg" style="font-size:12px;color:#C9A84C;margin:6px 0">Analyzing...</div><div id="timer" style="font-size:18px;color:#F0CC6E;font-weight:700">0.0s</div><div id="errMsg" style="color:#C0392B;font-size:10px;margin-top:6px"></div></div>';
   $('L').innerHTML=h;
+  // Auto-select newest email if nothing selected
+  if(viewIdx===-1&&emails.length>0)viewIdx=emails.length-1;
   renderRight();
 }
 
@@ -224,61 +234,108 @@ function renderRight(){
   if(!currentThread)return;
   var t=currentThread.thread,emails=currentThread.emails||[],ctx=currentThread.context||{};
   var h='';
-  if(viewIdx===-1){
-    // OVERVIEW
-    h+='<div class="scores"><div class="gauge"><div class="val" style="color:'+col(t.intent||1,10)+'">'+(t.intent||'?')+'<span class="mx">/10</span></div><div class="lbl">Buyer Intent</div></div>';
-    h+='<div class="gauge"><div class="val" style="color:'+col(t.win_pct||0,100)+'">'+(t.win_pct||0)+'<span class="mx">%</span></div><div class="lbl">Win Likelihood</div></div></div>';
-    if(t.deal_health||t.trajectory){h+='<div style="margin-bottom:12px">';if(t.deal_health)h+='<span class="health-badge '+(t.deal_health||'').replace(/_/g,'-')+'">'+esc(t.deal_health||'').replace(/_/g,' ')+'</span>';if(t.trajectory)h+='<span class="traj-badge '+(t.trajectory||'')+'">&#x2192; '+esc(t.trajectory)+'</span>';h+='</div>'}
-    h+='<div class="stage">'+(t.deal_stage||'unknown').replace(/_/g,' ')+'</div>';
-    if(ctx.last_recommended_response)h+='<div class="box coach"><div class="t">&#x1F3AF; RECOMMENDED NEXT RESPONSE</div><div class="txt">'+esc(ctx.last_recommended_response)+'</div></div>';
-    var ui=jp(ctx.unresolved_items);if(ui.length){h+='<div class="unresolved"><div class="t">&#x26A0; UNRESOLVED ('+ui.length+')</div><ul>';for(var i=0;i<ui.length;i++)h+='<li>'+esc(ui[i])+'</li>';h+='</ul></div>'}
-    var st=jp(ctx.unengaged_stakeholders);if(st.length)h+='<div class="box" style="background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.2)"><div class="t" style="color:#E8A020">&#x1F465; UNENGAGED STAKEHOLDERS</div><div class="txt">'+st.map(esc).join(', ')+'</div></div>';
-    if(ctx.tone_guidance)h+='<div class="box tone"><div class="t">&#x1F4AC; TONE GUIDANCE</div><div class="txt">'+esc(ctx.tone_guidance)+'</div></div>';
-    var ex=[];if(ctx.response_time_trend)ex.push({l:'Response Time Trend',v:ctx.response_time_trend});if(ctx.competitor_risk)ex.push({l:'Competitor Risk',v:ctx.competitor_risk});
-    if(ex.length){h+='<div class="box health"><div class="t">DEAL INTELLIGENCE</div>';for(var i=0;i<ex.length;i++)h+='<div style="margin-bottom:6px"><span style="font-size:9px;font-weight:700;color:#8A9BAD;text-transform:uppercase">'+esc(ex[i].l)+'</span><div style="font-size:11px;color:#F5F7FA;margin-top:2px">'+esc(ex[i].v)+'</div></div>';h+='</div>'}
-    // Progression
-    h+='<div class="slbl" style="margin-top:14px">EMAIL-BY-EMAIL</div>';
-    for(var i=0;i<emails.length;i++){var em=emails[i],a=em.analysis||{},isIn=em.direction==='inbound',sigs=a.signals||[];
-      h+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:5px;padding:8px 10px;margin-bottom:4px;cursor:pointer" onclick="selV('+i+')">';
-      h+='<div style="display:flex;justify-content:space-between"><div style="display:flex;align-items:center;gap:6px"><span class="dir '+(isIn?'in':'out')+'">'+(isIn?'IN':'OUT')+'</span><span style="font-size:11px;font-weight:600">#'+em.email_index+'</span><span style="font-size:10px;color:#8A9BAD">'+esc(em.sender)+'</span>';
-      if(!isIn&&a.outbound_coaching&&a.outbound_coaching.rep_grade){var gl=a.outbound_coaching.rep_grade[0].toUpperCase();h+='<span style="font-size:11px;font-weight:700;color:'+gradeCol(gl)+'">'+gl+'</span>'}
-      h+='</div><div style="display:flex;gap:8px">';if(a.intent!=null)h+='<span style="font-size:11px;font-weight:600;color:'+col(a.intent,10)+'">'+a.intent+'</span>';if(a.win_pct!=null)h+='<span style="font-size:11px;font-weight:600;color:'+col(a.win_pct,100)+'">'+a.win_pct+'%</span>';h+='</div></div>';
-      if(a.summary)h+='<div style="font-size:11px;color:#F5F7FA;margin-top:4px;line-height:1.4">'+esc(a.summary)+'</div>';
-      for(var si=0;si<sigs.length;si++)h+='<div style="display:inline-flex;align-items:center;gap:4px;margin-top:3px;margin-right:6px"><span class="badge '+(sigs[si].severity||'yellow')+'">'+(sigs[si].severity||'')+'</span><span style="font-size:10px;color:#8A9BAD">'+esc(sigs[si].desc)+'</span></div>';
-      h+='</div>';
+  if(viewIdx<0||viewIdx>=emails.length){$('R').innerHTML='';return}
+
+  // EMAIL DETAIL — always show the selected email
+  var em=emails[viewIdx];if(!em){$('R').innerHTML='';return}
+  var a=em.analysis||{},isIn=em.direction==='inbound',sigs=a.signals||[];
+
+  h+='<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px"><span class="dir '+(isIn?'in':'out')+'" style="font-size:9px;padding:2px 6px">'+(isIn?'INBOUND':'OUTBOUND')+'</span><span style="font-size:16px;font-weight:700">Email #'+em.email_index+'</span></div>';
+  h+='<div style="font-size:11px;color:#8A9BAD;margin-top:3px">'+esc(em.sender)+' &middot; '+esc(em.email_date)+'</div></div>';
+
+  // Scores
+  if(a.intent!=null){h+='<div class="scores" style="margin-bottom:12px"><div class="gauge"><div class="val" style="color:'+col(a.intent,10)+'">'+a.intent+'<span class="mx">/10</span></div><div class="lbl">Intent</div></div><div class="gauge"><div class="val" style="color:'+col(a.win_pct,100)+'">'+a.win_pct+'<span class="mx">%</span></div><div class="lbl">Win %</div></div>';
+    if(!isIn&&a.outbound_coaching&&a.outbound_coaching.rep_grade){var g2=a.outbound_coaching.rep_grade[0].toUpperCase();h+='<div class="gauge"><div class="grade-letter '+g2+'">'+g2+'</div><div class="lbl">Grade</div></div>'}
+    h+='</div>'}
+
+  // Deal health badges
+  if(t.deal_health||t.trajectory){h+='<div style="margin-bottom:10px">';if(t.deal_health)h+='<span class="health-badge '+(t.deal_health||'').replace(/_/g,'-')+'">'+esc(t.deal_health||'').replace(/_/g,' ')+'</span>';if(t.trajectory)h+='<span class="traj-badge '+(t.trajectory||'')+'">&#x2192; '+esc(t.trajectory)+'</span>';h+='</div>'}
+
+  if(a.summary)h+='<div class="box sum"><div class="t">WHAT THIS EMAIL MEANS</div><div class="txt">'+esc(a.summary)+'</div></div>';
+
+  // Inbound coaching
+  if(isIn&&a.inbound_coaching){var ib=a.inbound_coaching;
+    if(ib.buyer_analysis)h+='<div class="box" style="background:rgba(46,139,192,0.06);border:1px solid rgba(46,139,192,0.2)"><div class="t" style="color:#2E8BC0">&#x1F9E0; BUYER ANALYSIS</div><div class="txt">'+esc(ib.buyer_analysis)+'</div></div>';
+    if(ib.buyer_requests&&ib.buyer_requests.length){h+='<div class="box" style="background:rgba(46,139,192,0.04);border:1px solid rgba(46,139,192,0.15)"><div class="t" style="color:#2E8BC0">&#x1F4CB; BUYER REQUESTS ('+ib.buyer_requests.length+')</div>';for(var bi=0;bi<ib.buyer_requests.length;bi++)h+='<div class="breq">'+esc(ib.buyer_requests[bi])+'</div>';h+='</div>'}
+    if(ib.recommended_response){
+      h+='<div class="box coach"><div class="t">&#x1F4DD; RECOMMENDED RESPONSE</div><div class="txt">'+esc(ib.recommended_response)+'</div></div>';
+      // ACTION BUTTONS
+      h+='<button class="btn btn-action" onclick="writeItForMe('+viewIdx+')">&#x270D; Write It For Me</button>';
+      h+='<button class="btn btn-coming" style="margin-top:4px">&#x1F4CE; Find the Right Attachment <span style="opacity:.6">(Coming)</span></button>';
     }
-  }else{
-    // EMAIL DETAIL
-    var em=emails[viewIdx];if(!em){$('R').innerHTML='';return}
-    var a=em.analysis||{},isIn=em.direction==='inbound',sigs=a.signals||[];
-    h+='<div style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:8px"><span class="dir '+(isIn?'in':'out')+'" style="font-size:9px;padding:2px 6px">'+(isIn?'INBOUND':'OUTBOUND')+'</span><span style="font-size:16px;font-weight:700">Email #'+em.email_index+'</span></div>';
-    h+='<div style="font-size:11px;color:#8A9BAD;margin-top:3px">'+esc(em.sender)+' &middot; '+esc(em.email_date)+'</div></div>';
-    if(a.intent!=null){h+='<div class="scores" style="margin-bottom:12px"><div class="gauge"><div class="val" style="color:'+col(a.intent,10)+'">'+a.intent+'<span class="mx">/10</span></div><div class="lbl">Intent</div></div><div class="gauge"><div class="val" style="color:'+col(a.win_pct,100)+'">'+a.win_pct+'<span class="mx">%</span></div><div class="lbl">Win %</div></div>';
-      if(!isIn&&a.outbound_coaching&&a.outbound_coaching.rep_grade){var g2=a.outbound_coaching.rep_grade[0].toUpperCase();h+='<div class="gauge"><div class="grade-letter '+g2+'">'+g2+'</div><div class="lbl">Grade</div></div>'}
-      h+='</div>'}
-    if(a.summary)h+='<div class="box sum"><div class="t">WHAT THIS EMAIL MEANS</div><div class="txt">'+esc(a.summary)+'</div></div>';
-    // Inbound coaching
-    if(isIn&&a.inbound_coaching){var ib=a.inbound_coaching;
-      if(ib.buyer_analysis)h+='<div class="box" style="background:rgba(46,139,192,0.06);border:1px solid rgba(46,139,192,0.2)"><div class="t" style="color:#2E8BC0">&#x1F9E0; BUYER ANALYSIS</div><div class="txt">'+esc(ib.buyer_analysis)+'</div></div>';
-      if(ib.buyer_requests&&ib.buyer_requests.length){h+='<div class="box" style="background:rgba(46,139,192,0.04);border:1px solid rgba(46,139,192,0.15)"><div class="t" style="color:#2E8BC0">&#x1F4CB; BUYER REQUESTS ('+ib.buyer_requests.length+')</div>';for(var bi=0;bi<ib.buyer_requests.length;bi++)h+='<div class="breq">'+esc(ib.buyer_requests[bi])+'</div>';h+='</div>'}
-      if(ib.recommended_response)h+='<div class="box coach"><div class="t">&#x1F4DD; RECOMMENDED RESPONSE</div><div class="txt">'+esc(ib.recommended_response)+'</div></div>';
-      if(ib.watch_for)h+='<div class="box" style="background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.2)"><div class="t" style="color:#E8A020">&#x1F440; WATCH FOR</div><div class="txt">'+esc(ib.watch_for)+'</div></div>';
-    }
-    // Outbound grading
-    if(!isIn&&a.outbound_coaching){var ob=a.outbound_coaching;
-      h+='<div class="box" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:10px 14px"><div class="t" style="color:#8A9BAD">&#x1F4CA; REP PERFORMANCE</div>';
-      if(ob.rep_grade)h+='<div style="font-size:12px;color:'+gradeCol(ob.rep_grade[0])+';font-weight:600;margin-bottom:6px">Grade: '+esc(ob.rep_grade)+'</div>';
-      if(ob.did_well)h+='<div style="font-size:12px;color:#1A7A4A;line-height:1.5;margin-bottom:6px">&#x2713; <strong>Did well:</strong> '+esc(ob.did_well)+'</div>';
-      if(ob.missed)h+='<div style="font-size:12px;color:#C0392B;line-height:1.5;margin-bottom:6px">&#x2717; <strong>Missed:</strong> '+esc(ob.missed)+'</div>';
-      if(ob.tone_match)h+='<div style="font-size:12px;color:#8A9BAD;line-height:1.5">&#x1F3A4; <strong>Tone:</strong> '+esc(ob.tone_match)+'</div>';
-      h+='</div>';
-    }
-    // Signals
-    if(sigs.length){h+='<div class="slbl">SIGNALS ('+sigs.length+')</div>';
-      for(var si=0;si<sigs.length;si++){var s=sigs[si];h+='<div class="sig '+(s.severity||'yellow')+'"><div class="sr"><span class="badge '+(s.severity||'yellow')+'">'+(s.severity||'')+'</span><span class="badge '+(s.severity||'yellow')+'" style="opacity:.7">'+(s.type||'')+'</span></div><div class="sd">'+esc(s.desc)+'</div>';if(s.quote)h+='<div class="sq">"'+esc(s.quote)+'"</div>';h+='</div>'}
-    }
+    if(ib.watch_for)h+='<div class="box" style="background:rgba(232,160,32,0.06);border:1px solid rgba(232,160,32,0.2);margin-top:10px"><div class="t" style="color:#E8A020">&#x1F440; WATCH FOR</div><div class="txt">'+esc(ib.watch_for)+'</div></div>';
   }
+
+  // Outbound grading
+  if(!isIn&&a.outbound_coaching){var ob=a.outbound_coaching;
+    h+='<div class="box" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);padding:10px 14px"><div class="t" style="color:#8A9BAD">&#x1F4CA; REP PERFORMANCE</div>';
+    if(ob.rep_grade)h+='<div style="font-size:12px;color:'+gradeCol(ob.rep_grade[0])+';font-weight:600;margin-bottom:6px">Grade: '+esc(ob.rep_grade)+'</div>';
+    if(ob.did_well)h+='<div style="font-size:12px;color:#1A7A4A;line-height:1.5;margin-bottom:6px">&#x2713; <strong>Did well:</strong> '+esc(ob.did_well)+'</div>';
+    if(ob.missed)h+='<div style="font-size:12px;color:#C0392B;line-height:1.5;margin-bottom:6px">&#x2717; <strong>Missed:</strong> '+esc(ob.missed)+'</div>';
+    if(ob.tone_match)h+='<div style="font-size:12px;color:#8A9BAD;line-height:1.5">&#x1F3A4; <strong>Tone:</strong> '+esc(ob.tone_match)+'</div>';
+    h+='</div>';
+  }
+
+  // Unresolved items from context
+  var ui=jp(ctx.unresolved_items);if(ui.length){h+='<div class="unresolved"><div class="t">&#x26A0; UNRESOLVED ('+ui.length+')</div><ul>';for(var i=0;i<ui.length;i++)h+='<li>'+esc(ui[i])+'</li>';h+='</ul></div>'}
+
+  // Signals
+  if(sigs.length){h+='<div class="slbl">SIGNALS ('+sigs.length+')</div>';
+    for(var si=0;si<sigs.length;si++){var s=sigs[si];h+='<div class="sig '+(s.severity||'yellow')+'"><div class="sr"><span class="badge '+(s.severity||'yellow')+'">'+(s.severity||'')+'</span><span class="badge '+(s.severity||'yellow')+'" style="opacity:.7">'+(s.type||'')+'</span></div><div class="sd">'+esc(s.desc)+'</div>';if(s.quote)h+='<div class="sq">"'+esc(s.quote)+'"</div>';h+='</div>'}
+  }
+
   $('R').innerHTML=h;
+}
+
+// == WRITE IT FOR ME ==
+function writeItForMe(idx){
+  var emails=currentThread.emails||[];
+  var em=emails[idx];if(!em||!em.analysis||!em.analysis.inbound_coaching)return;
+  var ib=em.analysis.inbound_coaching;
+  var ctx=currentThread.context||{};
+
+  // Show loading overlay
+  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closeDraft(event)"><div class="draft-modal"><div class="spin" style="font-size:24px;text-align:center">&#x270D;</div><div style="text-align:center;color:#C9A84C;font-size:12px;margin-top:8px">Writing your response...</div></div></div>';
+
+  // Build prompt for the LLM
+  var prompt='Write a professional email response based on this guidance:\n\n';
+  prompt+='RECOMMENDED APPROACH: '+(ib.recommended_response||'')+'\n\n';
+  if(ib.buyer_requests&&ib.buyer_requests.length)prompt+='BUYER REQUESTS TO ADDRESS:\n'+ib.buyer_requests.map(function(r,i){return(i+1)+'. '+r}).join('\n')+'\n\n';
+  if(ctx.tone_guidance)prompt+='TONE: '+ctx.tone_guidance+'\n\n';
+  prompt+='The buyer is: '+esc(em.sender)+'\n';
+  prompt+='Write ONLY the email body. No subject line. Professional but natural tone. Address every buyer request specifically.';
+
+  fetch('https://openrouter.ai/api/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'google/gemini-2.5-flash',
+      max_tokens:2000,
+      messages:[{role:'user',content:prompt}]
+    })
+  })
+  .then(function(r){return r.json()})
+  .then(function(data){
+    var draft=(data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'Could not generate draft.';
+    showDraft(draft);
+  })
+  .catch(function(e){
+    showDraft('Error generating draft: '+e.message);
+  });
+}
+
+function showDraft(text){
+  $('draftOverlay').innerHTML='<div class="draft-overlay" onclick="closeDraft(event)"><div class="draft-modal" onclick="event.stopPropagation()"><div class="t">&#x270D; DRAFT RESPONSE</div><div class="draft-text">'+esc(text)+'</div><div class="btn-row"><button class="btn btn-gold" onclick="copyDraft()">Copy to Clipboard</button><button class="btn btn-ghost" onclick="closeDraft()">Close</button></div></div></div>';
+  window._lastDraft=text;
+}
+
+function copyDraft(){
+  if(window._lastDraft){navigator.clipboard.writeText(window._lastDraft).then(function(){closeDraft()}).catch(function(){alert('Copy failed')})}
+}
+
+function closeDraft(e){
+  if(e&&e.target&&!e.target.classList.contains('draft-overlay'))return;
+  $('draftOverlay').innerHTML='';
 }
 
 // == ADD EMAIL ==
