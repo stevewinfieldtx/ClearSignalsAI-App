@@ -623,4 +623,7 @@ if (process.env.DATABASE_URL) {
   console.log('[ROUTES] Thread management endpoints mounted at /api/threads');
 }
 
-app.listen(PORT, function() { console.log('ClearSignals AI v1.4.0 on port ' + PORT); });
+// == Outlook Add-in routes ==
+require("./routes-addin")(app);
+
+app.listen(PORT, function() { console.log('ClearSignals AI v1.4.1 on port ' + PORT); });
