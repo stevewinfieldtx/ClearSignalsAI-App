@@ -5,13 +5,13 @@ const router = express.Router();
 const db = require('./db');
 const { DIFFERENTIAL_PROMPT } = require('./prompts-differential');
 
-// Models (same as main server)
+// Models (from environment)
 const MODELS = {
-  'haiku': 'anthropic/claude-3.5-haiku',
-  'sonnet': 'anthropic/claude-sonnet-4',
-  'flash-lite': 'google/gemini-2.5-flash-lite',
-  'flash': 'google/gemini-2.5-flash',
-  'pro': 'google/gemini-2.5-pro'
+  'haiku': process.env.MODEL_HAIKU || 'anthropic/claude-3.5-haiku',
+  'sonnet': process.env.MODEL_SONNET || 'anthropic/claude-sonnet-4',
+  'flash-lite': process.env.MODEL_FLASH_LITE || 'google/gemini-2.5-flash-lite',
+  'flash': process.env.MODEL_FLASH || 'google/gemini-2.5-flash',
+  'pro': process.env.MODEL_PRO || 'google/gemini-2.5-pro'
 };
 
 // Stage 1 preprocessor prompt (same as main)

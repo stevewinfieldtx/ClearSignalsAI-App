@@ -339,13 +339,13 @@ CULTURAL RULES: Japan(silence=contemplation, "consider"=no), Vietnam(relationshi
 
 Return ONLY valid JSON. No markdown fences. No explanation.`;
 
-// == Available models (from environment) ==
+// == Available models ==
 const MODELS = {
-  'haiku': process.env.MODEL_HAIKU || 'anthropic/claude-3.5-haiku',
-  'sonnet': process.env.MODEL_SONNET || 'anthropic/claude-sonnet-4',
-  'flash-lite': process.env.MODEL_FLASH_LITE || 'google/gemini-2.5-flash-lite',
-  'flash': process.env.MODEL_FLASH || 'google/gemini-2.5-flash',
-  'pro': process.env.MODEL_PRO || 'google/gemini-2.5-pro'
+  'haiku': 'anthropic/claude-3.5-haiku',
+  'sonnet': 'anthropic/claude-sonnet-4',
+  'flash-lite': 'google/gemini-2.5-flash-lite',
+  'flash': 'google/gemini-2.5-flash',
+  'pro': 'google/gemini-2.5-pro'
 };
 
 // == OpenRouter API call helper ==
@@ -623,12 +623,7 @@ if (process.env.DATABASE_URL) {
   console.log('[ROUTES] Thread management endpoints mounted at /api/threads');
 }
 
-// == Portal API routes (vendor partner integration) ==
-var portalRoutes = require('./routes-portal');
-app.use('/api', portalRoutes);
-console.log('[ROUTES] Portal API endpoints mounted at /api/v1');
-
 // == Outlook Add-in routes ==
 require("./routes-addin")(app);
 
-app.listen(PORT, function() { console.log('ClearSignals AI v1.5.0 on port ' + PORT); });
+app.listen(PORT, function() { console.log('ClearSignals AI v1.4.1 on port ' + PORT); });

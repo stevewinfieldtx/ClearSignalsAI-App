@@ -60,8 +60,52 @@ async function initDB() {
 
       CREATE INDEX IF NOT EXISTS idx_thread_emails_thread ON thread_emails(thread_id, email_index);
       CREATE INDEX IF NOT EXISTS idx_threads_status ON threads(status, updated_at DESC);
+
+      -- == Portal API: Vendors ==
+      CREATE TABLE IF NOT EXISTS portal_vendors (
+        id SERIAL PRIMARY KEY,
+        vendor_key TEXT UNIQUE NOT NULL,
+        secret_hash TEXT NOT NULL,
+        name TEXT NOT NULL,
+        product TEXT NOT NULL,
+        active BOOLEAN DEFAULT TRUE,
+        solution_brief JSONB DEFAULT '{}',
+        usage_count INTEGER DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      -- == Portal API: Sessions ==
+      CREATE TABLE IF NOT EXISTS portal_sessions (
+        id SERIAL PRIMARY KEY,
+        token TEXT UNIQUE NOT NULL,
+        vendor_id INTEGER REFERENCES portal_vendors(id) ON DELETE CASCADE,
+        lead_data JSONB NOT NULL,
+        usage_count INTEGER DEFAULT 0,
+        expires_at TIMESTAMPTZ NOT NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      -- == Portal API: Analysis log (de-identified, no PII) ==
+      CREATE TABLE IF NOT EXISTS portal_analysis_log (
+        id SERIAL PRIMARY KEY,
+        analysis_id TEXT UNIQUE NOT NULL,
+        vendor_id INTEGER REFERENCES portal_vendors(id) ON DELETE SET NULL,
+        email_count INTEGER,
+        deal_health_score INTEGER,
+        deal_stage TEXT,
+        pipeline TEXT,
+        total_ms INTEGER,
+        pii_purged_at TIMESTAMPTZ,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_portal_vendors_key ON portal_vendors(vendor_key);
+      CREATE INDEX IF NOT EXISTS idx_portal_sessions_token ON portal_sessions(token);
+      CREATE INDEX IF NOT EXISTS idx_portal_sessions_expires ON portal_sessions(expires_at);
+      CREATE INDEX IF NOT EXISTS idx_portal_analysis_vendor ON portal_analysis_log(vendor_id, created_at DESC);
     `);
-    console.log('[DB] Tables ready');
+    console.log('[DB] Tables ready (including portal tables)');
   } finally {
     client.release();
   }
@@ -259,5 +303,154 @@ module.exports = {
   getAnalyzedEmails,
   getContext,
   updateContext,
-  getDifferentialBatch
+  getDifferentialBatch,
+  // Portal API
+  createVendor,
+  getVendorByKey,
+  updateVendorSolution,
+  setVendorActive,
+  incrementVendorUsage,
+  listVendors,
+  createSession,
+  getSessionByToken,
+  incrementSessionUsage,
+  cleanExpiredSessions,
+  logAnalysis,
+  getVendorAnalytics
 };
+
+// ══════════════════════════════════════════════════════════════
+// PORTAL API — Vendor operations
+// ══════════════════════════════════════════════════════════════
+
+async function createVendor(data) {
+  var res = await pool.query(
+    "INSERT INTO portal_vendors (vendor_key, secret_hash, name, product, solution_brief) " +
+    "VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    [data.vendor_key, data.secret_hash, data.name, data.product,
+     JSON.stringify(data.solution_brief || {})]
+  );
+  return res.rows[0];
+}
+
+async function getVendorByKey(vendorKey) {
+  var res = await pool.query(
+    "SELECT * FROM portal_vendors WHERE vendor_key = $1",
+    [vendorKey]
+  );
+  var row = res.rows[0] || null;
+  if (row && typeof row.solution_brief === 'string') {
+    try { row.solution_brief = JSON.parse(row.solution_brief); } catch(e) {}
+  }
+  return row;
+}
+
+async function updateVendorSolution(vendorKey, solutionBrief) {
+  var res = await pool.query(
+    "UPDATE portal_vendors SET solution_brief = $1, updated_at = NOW() " +
+    "WHERE vendor_key = $2 RETURNING *",
+    [JSON.stringify(solutionBrief), vendorKey]
+  );
+  return res.rows[0] || null;
+}
+
+async function setVendorActive(vendorKey, active) {
+  var res = await pool.query(
+    "UPDATE portal_vendors SET active = $1, updated_at = NOW() " +
+    "WHERE vendor_key = $2 RETURNING *",
+    [active, vendorKey]
+  );
+  return res.rows[0] || null;
+}
+
+async function incrementVendorUsage(vendorId) {
+  await pool.query(
+    "UPDATE portal_vendors SET usage_count = usage_count + 1 WHERE id = $1",
+    [vendorId]
+  );
+}
+
+async function listVendors() {
+  var res = await pool.query(
+    "SELECT id, vendor_key, name, product, active, usage_count, created_at, updated_at " +
+    "FROM portal_vendors ORDER BY created_at DESC"
+  );
+  return res.rows;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PORTAL API — Session operations
+// ══════════════════════════════════════════════════════════════
+
+async function createSession(data) {
+  var res = await pool.query(
+    "INSERT INTO portal_sessions (token, vendor_id, lead_data, expires_at) " +
+    "VALUES ($1, $2, $3, $4) RETURNING *",
+    [data.token, data.vendor_id, JSON.stringify(data.lead_data), data.expires_at]
+  );
+  return res.rows[0];
+}
+
+async function getSessionByToken(token) {
+  var res = await pool.query(
+    "SELECT s.*, v.vendor_key, v.name as vendor_name, v.product as vendor_product, " +
+    "v.active as vendor_active, v.solution_brief " +
+    "FROM portal_sessions s " +
+    "JOIN portal_vendors v ON s.vendor_id = v.id " +
+    "WHERE s.token = $1",
+    [token]
+  );
+  var row = res.rows[0] || null;
+  if (row) {
+    if (typeof row.lead_data === 'string') {
+      try { row.lead_data = JSON.parse(row.lead_data); } catch(e) {}
+    }
+    if (typeof row.solution_brief === 'string') {
+      try { row.solution_brief = JSON.parse(row.solution_brief); } catch(e) {}
+    }
+  }
+  return row;
+}
+
+async function incrementSessionUsage(sessionId) {
+  await pool.query(
+    "UPDATE portal_sessions SET usage_count = usage_count + 1 WHERE id = $1",
+    [sessionId]
+  );
+}
+
+async function cleanExpiredSessions() {
+  var res = await pool.query(
+    "DELETE FROM portal_sessions WHERE expires_at < NOW() RETURNING id"
+  );
+  return res.rowCount;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PORTAL API — Analysis logging (de-identified, no PII)
+// ══════════════════════════════════════════════════════════════
+
+async function logAnalysis(data) {
+  var res = await pool.query(
+    "INSERT INTO portal_analysis_log (analysis_id, vendor_id, email_count, deal_health_score, deal_stage, pipeline, total_ms, pii_purged_at) " +
+    "VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+    [data.analysis_id, data.vendor_id, data.email_count, data.deal_health_score,
+     data.deal_stage, data.pipeline, data.total_ms, data.pii_purged_at]
+  );
+  return res.rows[0];
+}
+
+async function getVendorAnalytics(vendorId, days) {
+  days = days || 30;
+  var res = await pool.query(
+    "SELECT COUNT(*) as total_analyses, " +
+    "AVG(deal_health_score) as avg_health_score, " +
+    "AVG(email_count) as avg_email_count, " +
+    "AVG(total_ms) as avg_processing_ms, " +
+    "COUNT(CASE WHEN deal_stage IN ('closed_won') THEN 1 END) as won_count, " +
+    "COUNT(CASE WHEN deal_stage IN ('closed_lost') THEN 1 END) as lost_count " +
+    "FROM portal_analysis_log WHERE vendor_id = $1 AND created_at > NOW() - ($2 || ' days')::interval",
+    [vendorId, days.toString()]
+  );
+  return res.rows[0] || {};
+}
