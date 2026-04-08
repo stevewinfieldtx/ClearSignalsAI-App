@@ -81,6 +81,69 @@ function cleanJSON(raw) {
   throw new Error('JSON parse failed');
 }
 
+// == Pre-flight diagnostic: check thread state before LLM analysis ==
+// Returns a preflight object with flags the frontend can surface immediately,
+// before (and independently of) the coaching output.
+function buildPreflight(thread, storedCtx) {
+  var flags = [];
+  var mode = 'normal'; // normal | warning | critical
+
+  // Trajectory check
+  if (thread.trajectory === 'declining') {
+    flags.push({ type: 'trajectory', severity: 'red', message: 'Thread trajectory is DECLINING — deal is losing momentum' });
+    mode = 'critical';
+  } else if (thread.trajectory === 'stalled') {
+    flags.push({ type: 'trajectory', severity: 'yellow', message: 'Thread trajectory is STALLED — no meaningful progress' });
+    if (mode !== 'critical') mode = 'warning';
+  }
+
+  // Win% drop check (requires prior_win_pct if available — flag if critically low)
+  if (thread.win_pct !== null && thread.win_pct <= 20) {
+    flags.push({ type: 'win_pct', severity: 'red', message: 'Win probability is critically low at ' + thread.win_pct + '%' });
+    mode = 'critical';
+  } else if (thread.win_pct !== null && thread.win_pct <= 40) {
+    flags.push({ type: 'win_pct', severity: 'yellow', message: 'Win probability is low at ' + thread.win_pct + '%' });
+    if (mode !== 'critical') mode = 'warning';
+  }
+
+  // Deal health check
+  if (thread.deal_health === 'critical') {
+    flags.push({ type: 'deal_health', severity: 'red', message: 'Deal health is CRITICAL' });
+    mode = 'critical';
+  } else if (thread.deal_health === 'at_risk') {
+    flags.push({ type: 'deal_health', severity: 'yellow', message: 'Deal health is AT RISK' });
+    if (mode !== 'critical') mode = 'warning';
+  }
+
+  // Unresolved items accumulating
+  var unresolved = (storedCtx && storedCtx.unresolved_items) ? storedCtx.unresolved_items : [];
+  if (unresolved.length >= 3) {
+    flags.push({ type: 'unresolved', severity: 'red', message: unresolved.length + ' buyer requests are unresolved — rep has been missing asks', items: unresolved });
+    mode = 'critical';
+  } else if (unresolved.length > 0) {
+    flags.push({ type: 'unresolved', severity: 'yellow', message: unresolved.length + ' unresolved buyer request(s) carried into this email', items: unresolved });
+    if (mode !== 'critical') mode = 'warning';
+  }
+
+  // Competitor risk
+  if (storedCtx && storedCtx.competitor_risk && storedCtx.competitor_risk.toLowerCase().startsWith('high')) {
+    flags.push({ type: 'competitor', severity: 'red', message: 'High competitor risk detected: ' + storedCtx.competitor_risk });
+    mode = 'critical';
+  } else if (storedCtx && storedCtx.competitor_risk && storedCtx.competitor_risk.toLowerCase().startsWith('medium')) {
+    flags.push({ type: 'competitor', severity: 'yellow', message: 'Medium competitor risk: ' + storedCtx.competitor_risk });
+    if (mode !== 'critical') mode = 'warning';
+  }
+
+  // Unengaged stakeholders
+  var unengaged = (storedCtx && storedCtx.unengaged_stakeholders) ? storedCtx.unengaged_stakeholders : [];
+  if (unengaged.length > 0) {
+    flags.push({ type: 'stakeholders', severity: 'yellow', message: 'Unengaged stakeholders: ' + unengaged.join(', ') });
+    if (mode !== 'critical') mode = 'warning';
+  }
+
+  return { mode: mode, flags: flags };
+}
+
 // ============================================================
 // ROUTES
 // ============================================================
@@ -110,8 +173,6 @@ router.get('/threads/:id', async function(req, res) {
 });
 
 // == Create new thread from pasted text ==
-// This does the initial full-thread analysis (like the existing /api/analyze)
-// but stores everything in the database
 router.post('/threads', async function(req, res) {
   var text = req.body.text;
   var model = req.body.model || 'sonnet';
@@ -149,9 +210,6 @@ router.post('/threads', async function(req, res) {
       };
     }));
 
-    // Stage 2: Full coaching analysis (uses the existing STAGE2_COACHING_PROMPT from server.js)
-    // We import it indirectly by calling the existing analyze endpoint logic
-    // For now, we'll use the differential prompt with "no prior context"
     var cleanThread = (s1.emails || []).map(function(em) {
       return 'EMAIL ' + em.index + ' of ' + emailCount + ':\n' +
         'Direction: ' + em.direction + ' | From: ' + em.from + ' | Date: ' + (em.date || 'unknown') + '\n' +
@@ -167,18 +225,15 @@ router.post('/threads', async function(req, res) {
     var t2ms = Date.now() - t2;
     console.log('[THREAD NEW] Analysis in ' + t2ms + 'ms');
 
-    // Store per-email analysis
     var batchAnalysis = s2.batch_analysis || [];
     for (var i = 0; i < batchAnalysis.length; i++) {
       var ba = batchAnalysis[i];
-      // Find matching email record
       var matchRecord = emailRecords.find(function(r) { return r.email_index === ba.email_index; });
       if (matchRecord) {
         await db.markEmailsAnalyzed([matchRecord.id], [ba]);
       }
     }
 
-    // Update thread with final scores
     var ctx = s2.updated_context || {};
     await db.updateThread(thread.id, {
       deal_stage: ctx.deal_stage || 'prospecting',
@@ -189,7 +244,6 @@ router.post('/threads', async function(req, res) {
       last_analysis_at: new Date().toISOString()
     });
 
-    // Update stored context
     await db.updateContext(thread.id, {
       unresolved_items: ctx.unresolved_items || [],
       unengaged_stakeholders: ctx.unengaged_stakeholders || [],
@@ -203,7 +257,6 @@ router.post('/threads', async function(req, res) {
       tone_guidance: ctx.tone_guidance || ''
     });
 
-    // Return full thread data
     var updatedThread = await db.getThread(thread.id);
     var allEmails = await db.getThreadEmails(thread.id);
     var updatedCtx = await db.getContext(thread.id);
@@ -227,7 +280,7 @@ router.post('/threads', async function(req, res) {
 // == Add new email(s) to existing thread + differential analysis ==
 router.post('/threads/:id/emails', async function(req, res) {
   var threadId = req.params.id;
-  var text = req.body.text; // raw pasted email text (one or more)
+  var text = req.body.text;
   var model = req.body.model || 'sonnet';
 
   if (!text || !text.trim()) return res.status(400).json({ error: 'No email text provided' });
@@ -239,6 +292,13 @@ router.post('/threads/:id/emails', async function(req, res) {
   var preprocessModel = MODELS['flash-lite'];
 
   try {
+    // == PRE-FLIGHT DIAGNOSTIC ==
+    // Runs before the LLM — surfaces guaranteed flags from stored state
+    // so critical thread conditions are never buried inside coaching output.
+    var existingContext = await db.getContext(threadId);
+    var preflight = buildPreflight(thread, existingContext);
+    console.log('[PREFLIGHT] mode=' + preflight.mode + ' flags=' + preflight.flags.length);
+
     // Get current email count to set correct indices
     var existingEmails = await db.getThreadEmails(threadId);
     var nextIndex = existingEmails.length + 1;
@@ -357,6 +417,7 @@ router.post('/threads/:id/emails', async function(req, res) {
       thread: updatedThread,
       emails: allEmails,
       context: updatedCtx,
+      preflight: preflight,
       new_analysis: batchAnalysis,
       coach: ctx.coach || '',
       recommended_actions: ctx.recommended_actions || [],
